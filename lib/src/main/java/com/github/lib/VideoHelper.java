@@ -117,7 +117,7 @@ public final class VideoHelper {
      * @param page page
      * @return {@link VideoClassify}
      */
-    public static VideoClassify classify(String type, Long page) {
+    public static VideoClassify classify(String type, Integer page) {
         String url = String.format(Constant.CLASSIFY_URL, type, page);
         Document doc = RequestUtils.document(url);
         VideoClassify videoClassify = new VideoClassify();
@@ -131,7 +131,7 @@ public final class VideoHelper {
         }
         videoClassify.setClassifies(classifies);
         Elements elements = doc.select("#contrainer > div:nth-child(3) > ul > li");
-        videoClassify.setPage(Long.parseLong(page.toString()));
+        videoClassify.setPage(Integer.parseInt(page.toString()));
         // 获取totalPage
         String text = JsoupUtils.text(doc, "#contrainer > div.pages.small.mb-3");
         String regex = "/\\d+";
@@ -139,9 +139,9 @@ public final class VideoHelper {
         Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
             String s = matcher.group();
-            videoClassify.setTotalPage(Long.valueOf(s.substring(1)));
+            videoClassify.setTotalPage(Integer.parseInt(s.substring(1)));
         } else {
-            videoClassify.setTotalPage(0L);
+            videoClassify.setTotalPage(0);
         }
         List<Video> videos = new ArrayList<>();
         for (int i = 0; i < elements.size(); i++) {

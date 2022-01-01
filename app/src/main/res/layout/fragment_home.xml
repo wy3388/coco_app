@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.github.coco.ui.home.HomeViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+<!--        <com.github.coco.views.IToolbar-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:show_back="false"-->
+<!--            app:show_search="true" />-->
+
+        <com.github.coco.views.IRecyclerView
+            android:id="@+id/home_rv"
+            notifyAdapter="@{viewModel.status}"
+            setLoadMoreListener="@{() -> viewModel.loadMore()}"
+            setRefreshListener="@{() -> viewModel.refresh()}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp" />
+
+    </LinearLayout>
+</layout>

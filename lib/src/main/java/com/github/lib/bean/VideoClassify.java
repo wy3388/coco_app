@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoClassify {
-    private Long page;
-    private Long totalPage;
+    private Integer page;
+    private Integer totalPage;
     private List<Video> videos;
     private List<Classify> classifies;
 }
