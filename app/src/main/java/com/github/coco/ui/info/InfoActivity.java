@@ -1,5 +1,6 @@
 package com.github.coco.ui.info;
 
+import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -7,7 +8,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.github.coco.R;
 import com.github.coco.base.BaseVMActivity;
+import com.github.coco.common.BundleBuilder;
 import com.github.coco.databinding.ActivityInfoBinding;
+import com.github.coco.ui.play.PlayActivity;
+import com.github.coco.utils.ActivityUtil;
+import com.github.lib.bean.VideoInfo;
 
 import java.util.Collections;
 
@@ -41,11 +46,19 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
         binding.infoRv.setAdapter(model.getAdapter());
         binding.infoRv.setLayoutManager(new GridLayoutManager(this, 3));
         model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
-            model.getAdapter().notifyItemChanged(position);
-            if (currentPosition > -1) {
-                model.getAdapter().notifyItemChanged(currentPosition);
+            if (currentPosition != position) {
+                model.getAdapter().notifyItemChanged(position);
+                if (currentPosition > -1) {
+                    model.getAdapter().notifyItemChanged(currentPosition);
+                }
+                currentPosition = position;
             }
-            currentPosition = position;
+            VideoInfo.Episodes episodes = model.getAdapter().getData().get(position);
+            Bundle bundle = BundleBuilder.builder()
+                    .putString("url", episodes.getUrl())
+                    .putString("title", episodes.getName())
+                    .build();
+            ActivityUtil.start(this, PlayActivity.class, bundle);
         });
         model.getAdapter().setOnSelectedListener((holder, position) -> {
             if (currentPosition > -1) {

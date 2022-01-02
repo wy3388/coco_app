@@ -81,7 +81,7 @@ public final class VideoHelper {
         return videoInfo;
     }
 
-    public static VideoPlay play(String url) {
+    public static VideoPlay playInfo(String url) {
         Document document = RequestUtils.document(url);
         Elements elements = document.select("body > div.container > div:nth-child(2) > ul > li");
         List<VideoPlay.Source> sources = new ArrayList<>();
