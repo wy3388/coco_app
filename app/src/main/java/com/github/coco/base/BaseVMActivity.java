@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 /**
@@ -14,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
  *
  * @author wy
  */
-public abstract class BaseVMActivity<V extends ViewDataBinding, M extends ViewModel> extends AppCompatActivity {
+public abstract class BaseVMActivity<V extends ViewDataBinding, M extends BaseViewModel> extends AppCompatActivity {
     protected V binding;
     protected M model;
 

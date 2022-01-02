@@ -7,11 +7,11 @@
         android:id="@+id/home_fragment"
         tools:ignore="HardcodedText" />
 
-<!--    <item-->
-<!--        android:title="分类"-->
-<!--        android:icon="@drawable/ic_classify"-->
-<!--        android:id="@+id/classify_fragment"-->
-<!--        tools:ignore="HardcodedText" />-->
+    <item
+        android:title="分类"
+        android:icon="@drawable/ic_classify"
+        android:id="@+id/classify_fragment"
+        tools:ignore="HardcodedText" />
 
 <!--    <item-->
 <!--        android:title="历史"-->

@@ -66,20 +66,19 @@ public class BaseViewModel extends ScopeViewModel {
                 .subscribe(consumer, throwableConsumer);
     }
 
-    protected <T> void async(AsyncCallback<T> asyncCallback) {
-        RxHelper.create((ObservableOnSubscribe<T>) emitter -> {
-            T t = asyncCallback.accept();
-            emitter.onNext(t);
+    protected void async(EmptyCallback emptyCallback) {
+        RxHelper.create((ObservableOnSubscribe<Void>) emitter -> {
+            emptyCallback.accept();
             emitter.onComplete();
         }).to(RxLife.to(this))
-                .subscribe(new Observer<T>() {
+                .subscribe(new Observer<Void>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NonNull T t) {
+                    public void onNext(@NonNull Void t) {
 
                     }
 
@@ -90,7 +89,34 @@ public class BaseViewModel extends ScopeViewModel {
 
                     @Override
                     public void onComplete() {
+                    }
+                });
+    }
 
+    protected void async(EmptyCallback emptyCallback, EmptyCallback completeCallback) {
+        RxHelper.create((ObservableOnSubscribe<Void>) emitter -> {
+            emptyCallback.accept();
+            emitter.onComplete();
+        }).to(RxLife.to(this))
+                .subscribe(new Observer<Void>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Void t) {
+
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        completeCallback.accept();
                     }
                 });
     }
@@ -116,6 +142,10 @@ public class BaseViewModel extends ScopeViewModel {
 
     protected interface AsyncCallback<T> {
         T accept();
+    }
+
+    protected interface EmptyCallback {
+        void accept();
     }
 
     protected interface PagerCallback<T> {

@@ -26,13 +26,13 @@ public class HomeFragment extends BaseVMFragment<FragmentHomeBinding, HomeViewMo
     protected void init() {
         binding.setLifecycleOwner(getViewLifecycleOwner());
         binding.setViewModel(model);
-        binding.homeRv.setAdapter(model.adapter);
+        binding.homeRv.setAdapter(model.getAdapter());
         binding.homeRv.setLayoutManager(new LinearLayoutManager(getContext()));
         model.loadData();
     }
 
     @Override
     protected void observer() {
-        model.getVideos().observe(this, videos -> model.adapter.addData(videos));
+        model.getVideos().observe(this, videos -> model.getAdapter().addData(videos));
     }
 }
