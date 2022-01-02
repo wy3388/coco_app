@@ -1,4 +1,4 @@
-package com.github.coco.ui.classify;
+package com.github.coco.ui.classify.adapter;
 
 import com.github.coco.R;
 import com.github.coco.base.BaseAdapter;

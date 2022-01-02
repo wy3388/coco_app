@@ -41,7 +41,7 @@ public class HistoryFragment extends BaseFragment<FragmentHistoryBinding> {
                     .putBoolean("isHistory", true)
                     .putString("baseUrl", history.getUrl())
                     .build();
-            ActivityUtil.start(requireContext(), PlayActivity.class, bundle);
+            ActivityUtil.start(this, PlayActivity.class, bundle);
         });
     }
 

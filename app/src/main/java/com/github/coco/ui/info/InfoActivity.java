@@ -26,7 +26,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
 
     private int currentPosition = -1;
 
-    private History history = new History();
+    private final History history = new History();
 
     @Override
     protected int getLayoutId() {
