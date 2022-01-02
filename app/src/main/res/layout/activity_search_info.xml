@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.github.coco.ui.search.vm.SearchInfoViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.github.coco.views.IToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.github.coco.views.IRecyclerView
+            notifyAdapter="@{viewModel.status}"
+            setRefreshListener="@{() -> viewModel.refresh()}"
+            android:id="@+id/search_rv"
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</layout>

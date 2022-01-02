@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.coco.R;
+import com.github.coco.ui.search.SearchActivity;
+import com.github.coco.utils.ActivityUtil;
 
 /**
  * Created on 2022/1/2.
@@ -49,9 +51,7 @@ public class IToolbar extends LinearLayout {
         LinearLayout searchBtn = findViewById(R.id.search_btn);
         if (aBoolean1) {
             searchBtn.setVisibility(View.VISIBLE);
-            searchBtn.setOnClickListener(view -> {
-                // todo 跳转搜索页面
-            });
+            searchBtn.setOnClickListener(view -> ActivityUtil.start(context, SearchActivity.class));
         }
         typedArray.recycle();
     }
