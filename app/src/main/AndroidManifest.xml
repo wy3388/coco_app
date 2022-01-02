@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.search.SearchInfoActivity" />
+        <activity android:name=".ui.info.InfoActivity" />
     </application>
 
 </manifest>

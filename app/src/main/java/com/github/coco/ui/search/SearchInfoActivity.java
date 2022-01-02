@@ -1,11 +1,17 @@
 package com.github.coco.ui.search;
 
+import android.os.Bundle;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
 import com.github.coco.base.BaseVMActivity;
+import com.github.coco.common.BundleBuilder;
 import com.github.coco.databinding.ActivitySearchInfoBinding;
+import com.github.coco.ui.info.InfoActivity;
 import com.github.coco.ui.search.vm.SearchInfoViewModel;
+import com.github.coco.utils.ActivityUtil;
+import com.github.lib.bean.Video;
 
 /**
  * Created on 2022/1/2.
@@ -33,6 +39,13 @@ public class SearchInfoActivity extends BaseVMActivity<ActivitySearchInfoBinding
         if (key != null && !"".equals(key)) {
             model.loadData(key);
         }
+        model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
+            Video video = model.getAdapter().getData().get(position);
+            Bundle bundle = BundleBuilder.builder()
+                    .putString("url", video.getUrl())
+                    .build();
+            ActivityUtil.start(this, InfoActivity.class, bundle);
+        });
     }
 
     @Override
