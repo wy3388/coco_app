@@ -1,7 +1,5 @@
 package com.github.coco.ui.home;
 
-import android.util.Log;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
@@ -35,9 +33,6 @@ public class HomeFragment extends BaseVMFragment<FragmentHomeBinding, HomeViewMo
 
     @Override
     protected void observer() {
-        model.getVideos().observe(this, videos -> {
-            Log.e("====>", "observer: " + videos);
-            model.adapter.addData(videos);
-        });
+        model.getVideos().observe(this, videos -> model.adapter.addData(videos));
     }
 }

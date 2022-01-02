@@ -14,11 +14,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-<!--        <com.github.coco.views.IToolbar-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:show_back="false"-->
-<!--            app:show_search="true" />-->
+        <com.github.coco.views.IToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:show_back="false"
+            app:show_search="true" />
 
         <com.github.coco.views.IRecyclerView
             android:id="@+id/home_rv"

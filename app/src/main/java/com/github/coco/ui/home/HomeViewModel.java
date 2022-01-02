@@ -1,5 +1,8 @@
 package com.github.coco.ui.home;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -10,6 +13,8 @@ import com.github.lib.bean.VideoClassify;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.functions.Consumer;
+
 /**
  * Created on 2022/1/1.
  *
@@ -17,6 +22,10 @@ import java.util.List;
  */
 public class HomeViewModel extends BaseViewModel {
     private final MutableLiveData<List<Video>> videos = new MutableLiveData<>();
+
+    public HomeViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public LiveData<List<Video>> getVideos() {
         return videos;
@@ -29,9 +38,8 @@ public class HomeViewModel extends BaseViewModel {
     public void loadData() {
         async(() -> {
             VideoClassify videoClassify = VideoHelper.classify("", page);
-            videos.postValue(videoClassify.getVideos());
-            return new Pager(page, videoClassify.getTotalPage());
-        });
+            return new Pager<>(page, videoClassify.getTotalPage(), videoClassify.getVideos());
+        }, (Consumer<List<Video>>) videos::postValue);
     }
 
     public void loadMore() {
