@@ -13,10 +13,10 @@
         android:id="@+id/classify_fragment"
         tools:ignore="HardcodedText" />
 
-<!--    <item-->
-<!--        android:title="历史"-->
-<!--        android:icon="@drawable/ic_history"-->
-<!--        android:id="@+id/history_fragment"-->
-<!--        tools:ignore="HardcodedText" />-->
+    <item
+        android:title="历史"
+        android:icon="@drawable/ic_history"
+        android:id="@+id/history_fragment"
+        tools:ignore="HardcodedText" />
 
 </menu>

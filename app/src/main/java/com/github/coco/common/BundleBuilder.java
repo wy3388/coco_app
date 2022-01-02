@@ -37,6 +37,11 @@ public class BundleBuilder {
         return this;
     }
 
+    public BundleBuilder putBoolean(String key, boolean value) {
+        bundle.putBoolean(key, value);
+        return this;
+    }
+
     public Bundle build() {
         return bundle;
     }

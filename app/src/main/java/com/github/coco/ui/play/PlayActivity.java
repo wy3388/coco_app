@@ -22,6 +22,8 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
 
     private int currentPosition = 0;
     private String title = "";
+    private String baseUrl = "";
+    private boolean isHistory = false;
 
     @Override
     protected int getLayoutId() {
@@ -35,6 +37,14 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
 
     @Override
     protected void init() {
+        String baseUrl = getIntent().getExtras().getString("baseUrl");
+        if (baseUrl != null) {
+            this.baseUrl = baseUrl;
+        }
+        isHistory = getIntent().getExtras().getBoolean("isHistory", false);
+        if (isHistory && !"".equals(baseUrl)) {
+            model.findOneByUrl(baseUrl);
+        }
         String url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
             model.playInfo(url);
@@ -77,8 +87,13 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
                 ToastUtil.show(this, "获取播放地址失败");
                 return;
             }
-            binding.player.setUp(videoPlay.getUrl(), title);
-            binding.player.startVideoAfterPreloading();
+            if (!isHistory) {
+                if (!"".equals(baseUrl)) {
+                    model.updatePlayUrl(baseUrl, videoPlay.getUrl(), currentPosition);
+                }
+                binding.player.setUp(videoPlay.getUrl(), title);
+                binding.player.startVideoAfterPreloading();
+            }
         });
         model.getUrl().observe(this, s -> {
             if ("".equals(s)) {
@@ -88,8 +103,21 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
             if (Jzvd.CONTAINER_LIST.size() > 0) {
                 Jzvd.releaseAllVideos();
             }
+            if (!"".equals(baseUrl)) {
+                model.updatePlayUrl(baseUrl, s, currentPosition);
+            }
             binding.player.setUp(s, title);
             binding.player.startVideoAfterPreloading();
+        });
+        model.getHistory().observe(this, history -> {
+            if (history != null) {
+                int tmp = currentPosition;
+                currentPosition = history.getSourceIndex();
+                model.getAdapter().notifyItemChanged(currentPosition);
+                model.getAdapter().notifyItemChanged(tmp);
+                binding.player.setUp(history.getPlayUrl(), history.getEpisodesName());
+                binding.player.startVideoAfterPreloading();
+            }
         });
     }
 

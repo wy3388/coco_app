@@ -61,6 +61,7 @@ public class HomeViewModel extends BaseViewModel {
                         Classify classify = new Classify();
                         classify.setName(classifyList.get(i).getName());
                         classify.setUrl(classifyList.get(i).getUrl());
+                        classify.setCreateTime(System.currentTimeMillis());
                         classifies[i -1] = classify;
                     }
                 }

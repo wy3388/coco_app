@@ -8,6 +8,7 @@ import com.github.coco.R;
 import com.github.coco.base.BaseActivity;
 import com.github.coco.databinding.ActivityMainBinding;
 import com.github.coco.ui.classify.ClassifyFragment;
+import com.github.coco.ui.history.HistoryFragment;
 import com.github.coco.ui.home.HomeFragment;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     protected void init() {
         fragments.add(new HomeFragment());
         fragments.add(new ClassifyFragment());
+        fragments.add(new HistoryFragment());
         binding.viewPager2.setCurrentItem(0);
         binding.viewPager2.setOffscreenPageLimit(fragments.size());
         binding.viewPager2.setUserInputEnabled(false);
@@ -49,6 +51,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             }
             if (itemId == R.id.classify_fragment) {
                 binding.viewPager2.setCurrentItem(1);
+                return true;
+            }
+            if (itemId == R.id.history_fragment) {
+                binding.viewPager2.setCurrentItem(2);
                 return true;
             }
             return false;

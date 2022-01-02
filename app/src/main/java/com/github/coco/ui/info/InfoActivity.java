@@ -10,6 +10,7 @@ import com.github.coco.R;
 import com.github.coco.base.BaseVMActivity;
 import com.github.coco.common.BundleBuilder;
 import com.github.coco.databinding.ActivityInfoBinding;
+import com.github.coco.entity.History;
 import com.github.coco.ui.play.PlayActivity;
 import com.github.coco.utils.ActivityUtil;
 import com.github.lib.bean.VideoInfo;
@@ -24,6 +25,8 @@ import java.util.Collections;
 public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewModel> {
 
     private int currentPosition = -1;
+
+    private History history = new History();
 
     @Override
     protected int getLayoutId() {
@@ -54,7 +57,12 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
                 currentPosition = position;
             }
             VideoInfo.Episodes episodes = model.getAdapter().getData().get(position);
+            history.setEpisodesUrl(episodes.getUrl());
+            history.setEpisodesName(episodes.getName());
+            // 添加历史记录
+            model.insertHistory(url, history);
             Bundle bundle = BundleBuilder.builder()
+                    .putString("baseUrl", url)
                     .putString("url", episodes.getUrl())
                     .putString("title", episodes.getName())
                     .build();
@@ -78,6 +86,11 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
     @Override
     protected void observer() {
         model.getVideoInfo().observe(this, videoInfo -> {
+            history.setUrl(videoInfo.getUrl());
+            history.setName(videoInfo.getName());
+            history.setImage(videoInfo.getImage());
+            history.setType(videoInfo.getType());
+            history.setCreateTime(System.currentTimeMillis());
             Collections.reverse(videoInfo.getEpisodes());
             model.getAdapter().setNewInstance(videoInfo.getEpisodes());
         });
