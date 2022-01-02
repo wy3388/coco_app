@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="IToolbar">
-        <attr name="show_back" format="boolean"/>
-        <attr name="show_search" format="boolean"/>
+        <attr name="show_back" format="boolean" />
+        <attr name="show_search" format="boolean" />
     </declare-styleable>
     <declare-styleable name="IRecyclerView">
-        <attr name="default_refreshing" format="boolean"/>
+        <attr name="default_refreshing" format="boolean" />
         <attr name="scroll_mode">
             <enum name="always" value="0" />
             <enum name="ifContentScrolls" value="1" />

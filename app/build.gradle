@@ -34,7 +34,7 @@ android {
         dataBinding true
     }
 
-    applicationVariants.all {variant ->
+    applicationVariants.all { variant ->
         if (variant.buildType.name == 'release') {
             variant.outputs.all {
                 def apkName = "coco_${defaultConfig.versionName}"

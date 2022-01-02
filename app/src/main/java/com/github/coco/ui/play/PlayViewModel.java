@@ -44,6 +44,7 @@ public class PlayViewModel extends BaseViewModel {
     private final HistoryDao historyDao = AppDatabase.getInstance().historyDao();
 
     private final MutableLiveData<History> history = new MutableLiveData<>();
+
     public LiveData<History> getHistory() {
         return history;
     }

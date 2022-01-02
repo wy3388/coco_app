@@ -62,7 +62,7 @@ public class HomeViewModel extends BaseViewModel {
                         classify.setName(classifyList.get(i).getName());
                         classify.setUrl(classifyList.get(i).getUrl());
                         classify.setCreateTime(System.currentTimeMillis());
-                        classifies[i -1] = classify;
+                        classifies[i - 1] = classify;
                     }
                 }
                 async(() -> classifyDao.insert(classifies), () -> SharedPreferencesUtil.putInt("isFirst", 1));

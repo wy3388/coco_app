@@ -481,7 +481,7 @@ public abstract class Jzvd extends FrameLayout implements View.OnClickListener, 
                 PROGRESS_DRAG_RATE = 1f;
             }
 //            mSeekTimePosition = (int) (mGestureDownPosition + deltaX * totalTimeDuration / (mScreenWidth * PROGRESS_DRAG_RATE));
-            mSeekTimePosition = (int)(mGestureDownPosition + deltaX * 100);
+            mSeekTimePosition = (int) (mGestureDownPosition + deltaX * 100);
             if (mSeekTimePosition > totalTimeDuration)
                 mSeekTimePosition = totalTimeDuration;
             String seekTime = JZUtils.stringForTime(mSeekTimePosition);

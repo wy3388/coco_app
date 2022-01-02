@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VideoInfo extends Video{
+public class VideoInfo extends Video {
 
     private List<Episodes> episodes;
 
