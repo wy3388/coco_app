@@ -1,10 +1,7 @@
 package com.github.coco.ui.play;
 
-import android.app.ActionBar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -15,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.github.coco.R;
-import com.github.coco.base.BaseVMActivity;
 import com.github.coco.databinding.ActivityPlayBinding;
 import com.github.coco.utils.ToastUtil;
 import com.github.lib.bean.VideoPlay;

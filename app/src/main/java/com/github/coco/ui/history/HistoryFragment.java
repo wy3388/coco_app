@@ -1,13 +1,11 @@
 package com.github.coco.ui.history;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
-import com.github.coco.base.BaseFragment;
 import com.github.coco.base.BaseVMFragment;
 import com.github.coco.common.AppDatabase;
 import com.github.coco.common.BundleBuilder;
