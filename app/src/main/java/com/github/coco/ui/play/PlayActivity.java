@@ -1,8 +1,17 @@
 package com.github.coco.ui.play;
 
+import android.app.ActionBar;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.github.coco.R;
@@ -18,24 +27,28 @@ import cn.jzvd.Jzvd;
  *
  * @author wy
  */
-public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewModel> {
+public class PlayActivity extends AppCompatActivity {
 
     private int currentPosition = 0;
     private String title = "";
     private String baseUrl = "";
     private boolean isHistory = false;
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_play;
-    }
+    private PlayViewModel model;
+    private ActivityPlayBinding binding;
 
     @Override
-    protected Class<PlayViewModel> mClass() {
-        return PlayViewModel.class;
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_play);
+        model = new ViewModelProvider(this).get(PlayViewModel.class);
+        init();
+        observer();
     }
 
-    @Override
     protected void init() {
         String baseUrl = getIntent().getExtras().getString("baseUrl");
         if (baseUrl != null) {
@@ -66,6 +79,7 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
             model.playUrl(source.getUrl());
             Jzvd.releaseAllVideos();
         });
+        binding.player.setNormalClickListener(view -> finish());
         model.getAdapter().setOnSelectedListener((holder, position) -> {
             TextView textView = holder.itemView.findViewById(R.id.text_view);
             CardView cardView = holder.itemView.findViewById(R.id.card_view);
@@ -79,7 +93,6 @@ public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewMo
         });
     }
 
-    @Override
     protected void observer() {
         model.getVideoPlay().observe(this, videoPlay -> {
             model.getAdapter().setNewInstance(videoPlay.getSources());

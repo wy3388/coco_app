@@ -10,9 +10,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.github.coco.views.IToolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+<!--        <com.github.coco.views.IToolbar-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content" />-->
 
         <cn.jzvd.JzvdStd
             android:id="@+id/player"

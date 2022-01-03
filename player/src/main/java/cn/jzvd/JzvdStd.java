@@ -27,6 +27,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Date;
@@ -43,6 +45,7 @@ public class JzvdStd extends Jzvd {
     public static int LAST_GET_BATTERYLEVEL_PERCENT = 70;
     protected static Timer DISMISS_CONTROL_VIEW_TIMER;
 
+    private OnClickListener normalClickListener;
     public ImageView backButton;
     public ProgressBar loadingProgressBar;
     public TextView titleTextView;
@@ -182,21 +185,8 @@ public class JzvdStd extends Jzvd {
 
 
         super.setUp(jzDataSource, screen, mediaInterfaceClass);
-        titleTextView.setVisibility(INVISIBLE);
         titleTextView.setText(jzDataSource.title);
         setScreen(screen);
-    }
-
-    @Override
-    public void gotoFullscreen() {
-        super.gotoFullscreen();
-        titleTextView.setVisibility(VISIBLE);
-    }
-
-    @Override
-    public void gotoNormalScreen() {
-        super.gotoNormalScreen();
-        titleTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -421,8 +411,18 @@ public class JzvdStd extends Jzvd {
         clearFloatScreen();
     }
 
+    public void setNormalClickListener(OnClickListener normalClickListener) {
+        this.normalClickListener = normalClickListener;
+    }
+
     protected void clickBack() {
-        backPress();
+        if (screen == STATE_NORMAL) {
+            if (normalClickListener != null) {
+                normalClickListener.onClick(backButton);
+            }
+        } else {
+            backPress();
+        }
     }
 
     protected void clickSurfaceContainer() {
@@ -451,7 +451,7 @@ public class JzvdStd extends Jzvd {
     public void setScreenNormal() {
         super.setScreenNormal();
         fullscreenButton.setImageResource(R.drawable.jz_enlarge);
-        backButton.setVisibility(View.GONE);
+//        backButton.setVisibility(View.GONE);
         tinyBackImageView.setVisibility(View.INVISIBLE);
         changeStartButtonSize((int) getResources().getDimension(R.dimen.jz_start_button_w_h_normal));
         batteryTimeLayout.setVisibility(View.GONE);

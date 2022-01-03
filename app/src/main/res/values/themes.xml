@@ -27,4 +27,8 @@
         <item name="android:windowLightStatusBar">false</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.PlayTheme" parent="Theme.Coco">
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>
