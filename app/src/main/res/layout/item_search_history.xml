@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="searchHistory"
+            type="com.github.coco.entity.SearchHistory" />
+    </data>
+
+    <com.ruffian.library.widget.RTextView
+        android:text="@{searchHistory.key}"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        app:corner_radius="2dp">
+
+    </com.ruffian.library.widget.RTextView>
+</layout>
