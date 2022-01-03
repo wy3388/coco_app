@@ -1,6 +1,7 @@
 package com.github.coco.ui.info;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -9,7 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.coco.base.BaseViewModel;
 import com.github.coco.common.AppDatabase;
 import com.github.coco.dao.HistoryDao;
+import com.github.coco.dao.StarDao;
 import com.github.coco.entity.History;
+import com.github.coco.entity.Star;
+import com.github.coco.utils.ToastUtil;
 import com.github.lib.VideoHelper;
 import com.github.lib.bean.VideoInfo;
 
@@ -35,11 +39,21 @@ public class InfoViewModel extends BaseViewModel {
         return adapter;
     }
 
+    private final MutableLiveData<Boolean> starStatus = new MutableLiveData<>();
+
+    public LiveData<Boolean> getStarStatus() {
+        return starStatus;
+    }
+
     public void loadData(String url) {
         async(() -> VideoHelper.info(url), this.videoInfo::postValue);
     }
 
     private final HistoryDao historyDao = AppDatabase.getInstance().historyDao();
+
+    private final StarDao starDao = AppDatabase.getInstance().starDao();
+
+    private boolean isClick = false;
 
     public void insertHistory(String url, History history) {
         async(() -> {
@@ -52,5 +66,40 @@ public class InfoViewModel extends BaseViewModel {
                 async(() -> historyDao.update(history1));
             }
         });
+    }
+
+    public void loadStarStatus(String url) {
+        async(() -> {
+            Star star = starDao.findOneByUrl(url);
+            if (star != null) {
+                starStatus.postValue(true);
+            } else {
+                starStatus.postValue(false);
+            }
+        }, () -> isClick = true);
+    }
+
+    public void starClick(VideoInfo videoInfo) {
+        if (isClick) {
+            Boolean value = starStatus.getValue();
+            // 判断是否已经收藏
+            if (value != null && getVideoInfo().getValue() != null) {
+                // 已收藏
+                if (!value) {
+                    Star star = new Star();
+                    star.setUrl(videoInfo.getUrl());
+                    star.setName(videoInfo.getName());
+                    star.setImage(videoInfo.getImage());
+                    star.setType(videoInfo.getType());
+                    star.setCreateTime(System.currentTimeMillis());
+                    // 保存数据
+                    async(() -> starDao.insert(star), () -> starStatus.postValue(true));
+                } else { // 取消收藏
+                    async(() -> starDao.deleteByUrl(videoInfo.getUrl()), () -> starStatus.postValue(false));
+                }
+            } else {
+                ToastUtil.show("请等待数据加载完成");
+            }
+        }
     }
 }

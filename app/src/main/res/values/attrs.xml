@@ -3,6 +3,7 @@
     <declare-styleable name="IToolbar">
         <attr name="show_back" format="boolean" />
         <attr name="show_search" format="boolean" />
+        <attr name="show_star" format="boolean" />
     </declare-styleable>
     <declare-styleable name="IRecyclerView">
         <attr name="default_refreshing" format="boolean" />

@@ -45,6 +45,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
         String url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
             model.loadData(url);
+            model.loadStarStatus(url);
         }
         binding.infoRv.setAdapter(model.getAdapter());
         binding.infoRv.setLayoutManager(new GridLayoutManager(this, 3));

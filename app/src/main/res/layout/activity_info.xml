@@ -15,6 +15,9 @@
         android:orientation="vertical">
 
         <com.github.coco.views.IToolbar
+            notifyStarIcon="@{viewModel.starStatus}"
+            setStarClickListener="@{() -> viewModel.starClick(viewModel.videoInfo)}"
+            app:show_star="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -106,7 +109,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:overScrollMode="never" />
-
 
     </LinearLayout>
 </layout>

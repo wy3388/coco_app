@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +22,10 @@ import com.github.coco.utils.ActivityUtil;
  * @author wy
  */
 public class IToolbar extends LinearLayout {
+
+    private ImageView starIv;
+    private LinearLayout starBtn;
+
     public IToolbar(Context context) {
         super(context);
     }
@@ -48,11 +54,29 @@ public class IToolbar extends LinearLayout {
             backBtn.setVisibility(View.GONE);
         }
         boolean aBoolean1 = typedArray.getBoolean(R.styleable.IToolbar_show_search, false);
-        LinearLayout searchBtn = findViewById(R.id.search_btn);
         if (aBoolean1) {
+            LinearLayout searchBtn = findViewById(R.id.search_btn);
             searchBtn.setVisibility(View.VISIBLE);
             searchBtn.setOnClickListener(view -> ActivityUtil.start(context, SearchActivity.class));
         }
+        boolean aBoolean2 = typedArray.getBoolean(R.styleable.IToolbar_show_star, false);
+        if (aBoolean2) {
+            starBtn = findViewById(R.id.star_btn);
+            starIv = findViewById(R.id.star_iv);
+            starBtn.setVisibility(View.VISIBLE);
+        }
         typedArray.recycle();
+    }
+
+    public void setStarClickListener(View.OnClickListener listener) {
+        if (starBtn != null) {
+            starBtn.setOnClickListener(listener);
+        }
+    }
+
+    public void setImageResource(@DrawableRes int redId) {
+        if (starIv != null) {
+            starIv.setImageResource(redId);
+        }
     }
 }

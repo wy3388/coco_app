@@ -10,6 +10,7 @@ import com.github.coco.databinding.ActivityMainBinding;
 import com.github.coco.ui.classify.ClassifyFragment;
 import com.github.coco.ui.history.HistoryFragment;
 import com.github.coco.ui.home.HomeFragment;
+import com.github.coco.ui.star.StarFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     protected void init() {
         fragments.add(new HomeFragment());
         fragments.add(new ClassifyFragment());
+        fragments.add(new StarFragment());
         fragments.add(new HistoryFragment());
         binding.viewPager2.setCurrentItem(0);
         binding.viewPager2.setOffscreenPageLimit(fragments.size());
@@ -53,8 +55,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 binding.viewPager2.setCurrentItem(1);
                 return true;
             }
-            if (itemId == R.id.history_fragment) {
+            if (itemId == R.id.star_fragment) {
                 binding.viewPager2.setCurrentItem(2);
+                return true;
+            }
+            if (itemId == R.id.history_fragment) {
+                binding.viewPager2.setCurrentItem(3);
                 return true;
             }
             return false;

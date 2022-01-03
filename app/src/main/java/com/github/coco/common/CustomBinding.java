@@ -1,10 +1,15 @@
 package com.github.coco.common;
 
+import android.util.Log;
+import android.view.View;
+
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
+import com.github.coco.R;
 import com.github.coco.views.IImageView;
 import com.github.coco.views.IRecyclerView;
+import com.github.coco.views.IToolbar;
 
 /**
  * Created on 2022/1/1.
@@ -18,6 +23,22 @@ public class CustomBinding {
         if (url != null && !"".equals(url)) {
             view.setImageUrl(view, url);
         }
+    }
+
+    @BindingAdapter("notifyStarIcon")
+    public static void notifyStarIcon(IToolbar view, Boolean b) {
+        if (b != null) {
+            if (b) {
+                view.setImageResource(R.drawable.ic_star);
+            } else {
+                view.setImageResource(R.drawable.ic_un_star);
+            }
+        }
+    }
+
+    @BindingAdapter("setStarClickListener")
+    public static void setStarClickListener(IToolbar view, InverseBindingListener listener) {
+        view.setStarClickListener(view1 -> listener.onChange());
     }
 
     @BindingAdapter("setRefreshListener")

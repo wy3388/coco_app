@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.coco.common.LoadStatus;
 import com.github.coco.common.RxHelper;
+import com.github.coco.utils.ToastUtil;
 import com.rxjava.rxlife.RxLife;
 import com.rxjava.rxlife.ScopeViewModel;
 
@@ -40,7 +41,10 @@ public class BaseViewModel extends ScopeViewModel {
             T t = asyncCallback.accept();
             emitter.onNext(t);
             emitter.onComplete();
-        }).to(RxLife.to(this)).subscribe(consumer, Throwable::printStackTrace);
+        }).to(RxLife.to(this)).subscribe(consumer, throwable -> {
+            throwable.printStackTrace();
+            ToastUtil.show(throwable.getMessage());
+        });
     }
 
     protected <T> void asyncStatus(AsyncCallback<T> asyncCallback, Consumer<T> consumer) {
@@ -54,6 +58,7 @@ public class BaseViewModel extends ScopeViewModel {
         }, throwable -> {
             status.postValue(LoadStatus.FAILED);
             throwable.printStackTrace();
+            ToastUtil.show(throwable.getMessage());
         });
     }
 
@@ -85,6 +90,7 @@ public class BaseViewModel extends ScopeViewModel {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
+                        ToastUtil.show(e.getMessage());
                     }
 
                     @Override
@@ -111,6 +117,7 @@ public class BaseViewModel extends ScopeViewModel {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        ToastUtil.show(e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -135,6 +142,7 @@ public class BaseViewModel extends ScopeViewModel {
                         status.postValue(LoadStatus.LOADING_END);
                     }
                 }, throwable -> {
+                    ToastUtil.show(throwable.getMessage());
                     status.postValue(LoadStatus.FAILED);
                     throwable.printStackTrace();
                 });
