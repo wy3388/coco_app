@@ -32,7 +32,6 @@ public class ClassifyFragment extends BaseFragment<FragmentClassifyBinding> {
         adapter = new ClassifyAdapter();
         binding.classifyRv.setAdapter(adapter);
         binding.classifyRv.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        binding.classifyRv.setSwipeRefreshLayoutEnabled(false);
         adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             Classify classify = adapter.getData().get(position);
             Bundle bundle = BundleBuilder.builder()
@@ -44,9 +43,6 @@ public class ClassifyFragment extends BaseFragment<FragmentClassifyBinding> {
 
     @Override
     protected void observer() {
-        AppDatabase.getInstance().classifyDao().findAll().observe(this, classifies -> {
-            adapter.setNewInstance(classifies);
-            binding.classifyRv.setRefreshing(false);
-        });
+        AppDatabase.getInstance().classifyDao().findAll().observe(this, classifies -> adapter.setNewInstance(classifies));
     }
 }

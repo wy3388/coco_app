@@ -44,7 +44,6 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
         adapter = new HistoryAdapter();
         binding.historyRv.setAdapter(adapter);
         binding.historyRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.historyRv.setSwipeRefreshLayoutEnabled(false);
         binding.editBtn.setOnClickListener(view -> {
             if (!selectType) {
                 selectList.clear();
@@ -112,9 +111,6 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
 
     @Override
     protected void observer() {
-        AppDatabase.getInstance().historyDao().findAll().observe(this, histories -> {
-            binding.historyRv.setRefreshing(false);
-            adapter.setNewInstance(histories);
-        });
+        AppDatabase.getInstance().historyDao().findAll().observe(this, histories -> adapter.setNewInstance(histories));
     }
 }

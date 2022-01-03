@@ -17,7 +17,7 @@
             app:show_back="false"
             app:show_search="false" />
 
-        <com.github.coco.views.IRecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/classify_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

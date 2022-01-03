@@ -36,7 +36,6 @@ public class StarFragment extends BaseFragment<FragmentStarBinding> {
         adapter = new StarAdapter();
         binding.starRv.setAdapter(adapter);
         binding.starRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.starRv.setSwipeRefreshLayoutEnabled(false);
         adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             Star star = adapter.getData().get(position);
             Bundle bundle = BundleBuilder.builder()
@@ -48,9 +47,6 @@ public class StarFragment extends BaseFragment<FragmentStarBinding> {
 
     @Override
     protected void observer() {
-        AppDatabase.getInstance().starDao().findAll().observe(this, stars -> {
-            adapter.setNewInstance(stars);
-            binding.starRv.setRefreshing(false);
-        });
+        AppDatabase.getInstance().starDao().findAll().observe(this, stars -> adapter.setNewInstance(stars));
     }
 }
