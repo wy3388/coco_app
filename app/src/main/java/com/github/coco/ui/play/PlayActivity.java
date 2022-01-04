@@ -36,9 +36,9 @@ public class PlayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
+//        View decorView = getWindow().getDecorView();
+//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//        decorView.setSystemUiVisibility(uiOptions);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_play);
         model = new ViewModelProvider(this).get(PlayViewModel.class);
         init();
