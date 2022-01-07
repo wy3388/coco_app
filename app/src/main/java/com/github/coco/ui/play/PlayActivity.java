@@ -1,7 +1,6 @@
 package com.github.coco.ui.play;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -9,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
 import com.github.coco.databinding.ActivityPlayBinding;
@@ -36,9 +35,6 @@ public class PlayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        View decorView = getWindow().getDecorView();
-//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//        decorView.setSystemUiVisibility(uiOptions);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_play);
         model = new ViewModelProvider(this).get(PlayViewModel.class);
         init();
@@ -63,7 +59,7 @@ public class PlayActivity extends AppCompatActivity {
             this.title = title;
         }
         binding.sourceRv.setAdapter(model.getAdapter());
-        binding.sourceRv.setLayoutManager(new GridLayoutManager(this, 3));
+        binding.sourceRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (currentPosition == position) {
                 return;
