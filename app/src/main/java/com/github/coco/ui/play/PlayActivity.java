@@ -1,6 +1,7 @@
 package com.github.coco.ui.play;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -8,12 +9,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
+import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityPlayBinding;
 import com.github.coco.utils.ToastUtil;
 import com.github.lib.bean.VideoPlay;
+
+import java.util.ArrayList;
 
 import cn.jzvd.Jzvd;
 
@@ -28,6 +33,9 @@ public class PlayActivity extends AppCompatActivity {
     private String title = "";
     private String baseUrl = "";
     private boolean isHistory = false;
+    private int episodesPosition = -1;
+    private PlaySourceAdapter sourceAdapter;
+    private PlayEpisodesAdapter episodesAdapter;
 
     private PlayViewModel model;
     private ActivityPlayBinding binding;
@@ -42,6 +50,8 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     protected void init() {
+        sourceAdapter = new PlaySourceAdapter();
+        episodesAdapter = new PlayEpisodesAdapter();
         String baseUrl = getIntent().getExtras().getString("baseUrl");
         if (baseUrl != null) {
             this.baseUrl = baseUrl;
@@ -58,21 +68,36 @@ public class PlayActivity extends AppCompatActivity {
         if (title != null) {
             this.title = title;
         }
-        binding.sourceRv.setAdapter(model.getAdapter());
+        binding.episodesRv.setLayoutManager(new GridLayoutManager(this, 3));
+        binding.episodesRv.setAdapter(episodesAdapter);
+        ArrayList<EpisodesParcelable> parcelables = getIntent().getExtras().getParcelableArrayList("episodes");
+        if (parcelables != null) {
+            episodesAdapter.setNewInstance(parcelables);
+        }
+        episodesPosition = getIntent().getExtras().getInt("episodesIndex", -1);
+        binding.sourceRv.setAdapter(sourceAdapter);
         binding.sourceRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
+        sourceAdapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (currentPosition == position) {
                 return;
             }
-            model.getAdapter().notifyItemChanged(position);
-            model.getAdapter().notifyItemChanged(currentPosition);
+            sourceAdapter.notifyItemChanged(position);
+            sourceAdapter.notifyItemChanged(currentPosition);
             currentPosition = position;
-            VideoPlay.Source source = model.getAdapter().getData().get(position);
+            VideoPlay.Source source = sourceAdapter.getData().get(position);
             model.playUrl(source.getUrl());
             Jzvd.releaseAllVideos();
         });
+        episodesAdapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
+            if (episodesPosition == -1 || episodesPosition == position) {
+                return;
+            }
+            episodesAdapter.notifyItemChanged(position);
+            episodesAdapter.notifyItemChanged(episodesPosition);
+            episodesPosition = position;
+        });
         binding.player.setNormalClickListener(view -> finish());
-        model.getAdapter().setOnSelectedListener((holder, position) -> {
+        sourceAdapter.setOnSelectedListener((holder, position) -> {
             TextView textView = holder.itemView.findViewById(R.id.text_view);
             CardView cardView = holder.itemView.findViewById(R.id.card_view);
             if (currentPosition == position) {
@@ -83,11 +108,23 @@ public class PlayActivity extends AppCompatActivity {
                 textView.setTextColor(getResources().getColor(R.color.default_text_color, null));
             }
         });
+        episodesAdapter.setOnSelectedListener((holder, position) -> {
+            TextView textView = holder.itemView.findViewById(R.id.text_view);
+            CardView cardView = holder.itemView.findViewById(R.id.card_view);
+            if (episodesPosition == position) {
+                cardView.setCardBackgroundColor(getResources().getColor(R.color.primary, null));
+                textView.setTextColor(getResources().getColor(R.color.white, null));
+            } else {
+                cardView.setCardBackgroundColor(getResources().getColor(R.color.white, null));
+                textView.setTextColor(getResources().getColor(R.color.default_text_color, null));
+            }
+        });
+
     }
 
     protected void observer() {
         model.getVideoPlay().observe(this, videoPlay -> {
-            model.getAdapter().setNewInstance(videoPlay.getSources());
+            sourceAdapter.setNewInstance(videoPlay.getSources());
             if ("".equals(videoPlay.getUrl())) {
                 ToastUtil.show(this, "获取播放地址失败");
                 return;
@@ -118,8 +155,8 @@ public class PlayActivity extends AppCompatActivity {
             if (history != null) {
                 int tmp = currentPosition;
                 currentPosition = history.getSourceIndex();
-                model.getAdapter().notifyItemChanged(currentPosition);
-                model.getAdapter().notifyItemChanged(tmp);
+                sourceAdapter.notifyItemChanged(currentPosition);
+                sourceAdapter.notifyItemChanged(tmp);
                 binding.player.setUp(history.getPlayUrl(), history.getEpisodesName());
                 binding.player.startVideoAfterPreloading();
             }

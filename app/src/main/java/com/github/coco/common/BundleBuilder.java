@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 /**
  * Created on 2022/1/2.
  *
@@ -39,6 +41,11 @@ public class BundleBuilder {
 
     public BundleBuilder putBoolean(String key, boolean value) {
         bundle.putBoolean(key, value);
+        return this;
+    }
+
+    public BundleBuilder putParcelableArrayList(String key, ArrayList<? extends Parcelable> list) {
+        bundle.putParcelableArrayList(key, list);
         return this;
     }
 

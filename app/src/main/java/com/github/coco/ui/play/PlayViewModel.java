@@ -35,12 +35,6 @@ public class PlayViewModel extends BaseViewModel {
         return url;
     }
 
-    private final PlaySourceAdapter adapter = new PlaySourceAdapter();
-
-    public PlaySourceAdapter getAdapter() {
-        return adapter;
-    }
-
     private final HistoryDao historyDao = AppDatabase.getInstance().historyDao();
 
     private final MutableLiveData<History> history = new MutableLiveData<>();

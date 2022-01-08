@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.github.coco.R;
 import com.github.coco.base.BaseVMActivity;
 import com.github.coco.common.BundleBuilder;
+import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityInfoBinding;
 import com.github.coco.entity.History;
 import com.github.coco.ui.play.PlayActivity;
 import com.github.coco.utils.ActivityUtil;
 import com.github.lib.bean.VideoInfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -58,6 +60,13 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
                 currentPosition = position;
             }
             VideoInfo.Episodes episodes = model.getAdapter().getData().get(position);
+            ArrayList<EpisodesParcelable> parcelableList = new ArrayList<>();
+            for (VideoInfo.Episodes e : model.getAdapter().getData()) {
+                EpisodesParcelable parcelable = new EpisodesParcelable();
+                parcelable.setName(e.getName());
+                parcelable.setUrl(e.getUrl());
+                parcelableList.add(parcelable);
+            }
             history.setEpisodesUrl(episodes.getUrl());
             history.setEpisodesName(episodes.getName());
             // 添加历史记录
@@ -66,6 +75,8 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
                     .putString("baseUrl", url)
                     .putString("url", episodes.getUrl())
                     .putString("title", episodes.getName())
+                    .putParcelableArrayList("episodes", parcelableList)
+                    .putInt("episodesIndex", position)
                     .build();
             ActivityUtil.start(this, PlayActivity.class, bundle);
         });
