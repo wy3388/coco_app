@@ -1,7 +1,6 @@
 package com.github.coco.ui.play;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -16,9 +15,12 @@ import com.github.coco.R;
 import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityPlayBinding;
 import com.github.coco.utils.ToastUtil;
+import com.github.lib.bean.VideoInfo;
 import com.github.lib.bean.VideoPlay;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import cn.jzvd.Jzvd;
 
@@ -56,13 +58,14 @@ public class PlayActivity extends AppCompatActivity {
         if (baseUrl != null) {
             this.baseUrl = baseUrl;
         }
-        isHistory = getIntent().getExtras().getBoolean("isHistory", false);
-        if (isHistory && !"".equals(baseUrl)) {
-            model.findOneByUrl(baseUrl);
-        }
         String url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
             model.playInfo(url);
+        }
+        isHistory = getIntent().getExtras().getBoolean("isHistory", false);
+        if (isHistory && !"".equals(baseUrl)) {
+            model.findOneByUrl(baseUrl);
+            model.episodesList(url);
         }
         String title = getIntent().getExtras().getString("title");
         if (title != null) {
@@ -160,6 +163,17 @@ public class PlayActivity extends AppCompatActivity {
                 binding.player.setUp(history.getPlayUrl(), history.getEpisodesName());
                 binding.player.startVideoAfterPreloading();
             }
+        });
+        model.getEpisodes().observe(this, episodes -> {
+            List<EpisodesParcelable> list = new ArrayList<>();
+            for (VideoInfo.Episodes episode : episodes) {
+                EpisodesParcelable parcelable = new EpisodesParcelable();
+                parcelable.setName(episode.getName());
+                parcelable.setUrl(episode.getUrl());
+                list.add(parcelable);
+            }
+            Collections.reverse(list);
+            episodesAdapter.setNewInstance(list);
         });
     }
 

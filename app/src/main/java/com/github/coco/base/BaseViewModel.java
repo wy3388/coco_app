@@ -11,6 +11,8 @@ import com.github.coco.utils.ToastUtil;
 import com.rxjava.rxlife.RxLife;
 import com.rxjava.rxlife.ScopeViewModel;
 
+import java.util.concurrent.CancellationException;
+
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.Observer;
@@ -43,7 +45,9 @@ public class BaseViewModel extends ScopeViewModel {
             emitter.onComplete();
         }).to(RxLife.to(this)).subscribe(consumer, throwable -> {
             throwable.printStackTrace();
-            ToastUtil.show(throwable.getMessage());
+            if (!(throwable instanceof CancellationException)) {
+                ToastUtil.show(throwable.getMessage());
+            }
         });
     }
 
@@ -58,7 +62,9 @@ public class BaseViewModel extends ScopeViewModel {
         }, throwable -> {
             status.postValue(LoadStatus.FAILED);
             throwable.printStackTrace();
-            ToastUtil.show(throwable.getMessage());
+            if (!(throwable instanceof CancellationException)) {
+                ToastUtil.show(throwable.getMessage());
+            }
         });
     }
 
@@ -142,9 +148,11 @@ public class BaseViewModel extends ScopeViewModel {
                         status.postValue(LoadStatus.LOADING_END);
                     }
                 }, throwable -> {
-                    ToastUtil.show(throwable.getMessage());
                     status.postValue(LoadStatus.FAILED);
                     throwable.printStackTrace();
+                    if (!(throwable instanceof CancellationException)) {
+                        ToastUtil.show(throwable.getMessage());
+                    }
                 });
     }
 

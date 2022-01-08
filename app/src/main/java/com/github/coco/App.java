@@ -7,8 +7,8 @@ import com.chad.library.adapter.base.module.LoadMoreModuleConfig;
 import com.github.coco.utils.ToastUtil;
 import com.github.coco.views.LoadMoreView;
 
-import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins;
-import io.reactivex.rxjava3.functions.Consumer;
+import java.util.concurrent.CancellationException;
+
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
@@ -28,6 +28,11 @@ public class App extends Application {
         super.onCreate();
         app = this;
         LoadMoreModuleConfig.setDefLoadMoreView(new LoadMoreView());
-        RxJavaPlugins.setErrorHandler(throwable -> ToastUtil.show(app, throwable.getMessage()));
+        RxJavaPlugins.setErrorHandler(throwable -> {
+            if (!(throwable instanceof CancellationException)) {
+                ToastUtil.show(app, throwable.getMessage());
+            }
+            ToastUtil.show(app, throwable.getMessage());
+        });
     }
 }

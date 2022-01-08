@@ -10,7 +10,7 @@ import org.jsoup.nodes.Element;
  *
  * @author wy
  */
-public final class JsoupUtils {
+public final class JsoupUtil {
 
     @NonNull
     public static String text(@NonNull Element element, String cssQuery) {

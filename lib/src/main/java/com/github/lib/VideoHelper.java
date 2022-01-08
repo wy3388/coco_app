@@ -6,8 +6,8 @@ import com.github.lib.bean.VideoClassify;
 import com.github.lib.bean.VideoInfo;
 import com.github.lib.bean.VideoPlay;
 import com.github.lib.constant.Constant;
-import com.github.lib.utils.JsoupUtils;
-import com.github.lib.utils.RequestUtils;
+import com.github.lib.utils.JsoupUtil;
+import com.github.lib.utils.RequestUtil;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,15 +34,15 @@ public final class VideoHelper {
     public static List<Video> search(String key) {
         List<Video> videos = new ArrayList<>();
         String searchUrl = String.format(Constant.SEARCH_URL, key);
-        Elements elements = RequestUtils.document(searchUrl).select("#search_list > ul > li");
+        Elements elements = RequestUtil.document(searchUrl).select("#search_list > ul > li");
         for (Element element : elements) {
-            String name = JsoupUtils.text(element, "li > h6 > a");
-            String alias = JsoupUtils.text(element, "li > div:nth-child(3)");
-            String year = JsoupUtils.text(element, "li > div:nth-child(4)");
+            String name = JsoupUtil.text(element, "li > h6 > a");
+            String alias = JsoupUtil.text(element, "li > div:nth-child(3)");
+            String year = JsoupUtil.text(element, "li > div:nth-child(4)");
             String type = element.select("li > span > a").text();
-            String info = JsoupUtils.text(element, "li > p");
-            String image = Constant.URL + JsoupUtils.attr(element, "src", "li > a > img");
-            String url = Constant.URL + JsoupUtils.attr(element, "href", "li > a");
+            String info = JsoupUtil.text(element, "li > p");
+            String image = Constant.URL + JsoupUtil.attr(element, "src", "li > a > img");
+            String url = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
             videos.add(new Video(name, alias, year, type, info, url, image));
         }
         return videos;
@@ -55,18 +55,18 @@ public final class VideoHelper {
      * @return {@link VideoInfo}
      */
     public static VideoInfo info(String url) {
-        Document document = RequestUtils.document(url);
-        String name = JsoupUtils.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div:nth-child(1)");
-        String alias = JsoupUtils.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div:nth-child(2)");
-        String year = JsoupUtils.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div.row.no-gutters > span:nth-child(2)");
+        Document document = RequestUtil.document(url);
+        String name = JsoupUtil.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div:nth-child(1)");
+        String alias = JsoupUtil.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div:nth-child(2)");
+        String year = JsoupUtil.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div.row.no-gutters > span:nth-child(2)");
         String type = document.select("body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.small > div.row.no-gutters > span:nth-child(3)").text();
-        String image = Constant.URL + JsoupUtils.attr(document, "src", "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.detail-poster.float-left > img");
-        String info = JsoupUtils.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > div.small");
+        String image = Constant.URL + JsoupUtil.attr(document, "src", "body > div > div > div.col-md-8.detail-left.mb-3 > section.clearfix.mb-3 > div.detail-poster.float-left > img");
+        String info = JsoupUtil.text(document, "body > div > div > div.col-md-8.detail-left.mb-3 > div.small");
         List<VideoInfo.Episodes> episodes = new ArrayList<>();
         Elements elements = document.select("body > div > div > div.col-md-8.detail-left.mb-3 > section:nth-child(2) > div.ep-panel.mb-3 > ul > li");
         for (Element element : elements) {
-            String eName = JsoupUtils.text(element, "li > a");
-            String eUrl = Constant.URL + JsoupUtils.attr(element, "href", "li > a");
+            String eName = JsoupUtil.text(element, "li > a");
+            String eUrl = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
             episodes.add(new VideoInfo.Episodes(eName, eUrl));
         }
         VideoInfo videoInfo = new VideoInfo();
@@ -81,20 +81,38 @@ public final class VideoHelper {
         return videoInfo;
     }
 
+    /**
+     * 获取播放列表
+     *
+     * @param url url
+     * @return {@link List}
+     */
+    public static List<VideoInfo.Episodes> episodesList(String url) {
+        Document document = RequestUtil.document(url);
+        Elements elements = document.select("body > div.container > section > div.ep-panel.mb-3 > ul > li");
+        List<VideoInfo.Episodes> list = new ArrayList<>();
+        for (Element element : elements) {
+            String name = JsoupUtil.text(element, "li > a");
+            String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
+            list.add(new VideoInfo.Episodes(name, u));
+        }
+        return list;
+    }
+
     public static VideoPlay playInfo(String url) {
-        Document document = RequestUtils.document(url);
+        Document document = RequestUtil.document(url);
         Elements elements = document.select("body > div.container > div:nth-child(2) > ul > li");
         List<VideoPlay.Source> sources = new ArrayList<>();
         for (Element element : elements) {
-            String name = JsoupUtils.text(element, "li > a");
-            String u = Constant.URL + JsoupUtils.attr(element, "href", "li > a");
+            String name = JsoupUtil.text(element, "li > a");
+            String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
             sources.add(new VideoPlay.Source(name, u));
         }
         String playUrl = "";
         if (sources.size() > 0) {
             // 获取播放地址
-            Document doc = RequestUtils.document(sources.get(0).getUrl());
-            playUrl = JsoupUtils.attr(doc, "src", "#x-video > source");
+            Document doc = RequestUtil.document(sources.get(0).getUrl());
+            playUrl = JsoupUtil.attr(doc, "src", "#x-video > source");
         }
         return new VideoPlay(playUrl, sources);
     }
@@ -106,8 +124,8 @@ public final class VideoHelper {
      * @return {@code String}
      */
     public static String playUrl(String url) {
-        Document document = RequestUtils.document(url);
-        return JsoupUtils.attr(document, "src", "#x-video > source");
+        Document document = RequestUtil.document(url);
+        return JsoupUtil.attr(document, "src", "#x-video > source");
     }
 
     /**
@@ -119,21 +137,21 @@ public final class VideoHelper {
      */
     public static VideoClassify classify(String type, Integer page) {
         String url = String.format(Constant.CLASSIFY_URL, type, page);
-        Document doc = RequestUtils.document(url);
+        Document doc = RequestUtil.document(url);
         VideoClassify videoClassify = new VideoClassify();
         // 获取分类
         Elements elements1 = doc.select("#contrainer > div.small.font-2.catalog-tags.mb-3 > div:nth-child(3) > ul > li");
         List<Classify> classifies = new ArrayList<>();
         for (Element element : elements1) {
-            String name = JsoupUtils.text(element, "li > a");
-            String u = Constant.URL + JsoupUtils.attr(element, "href", "li > a");
+            String name = JsoupUtil.text(element, "li > a");
+            String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
             classifies.add(new Classify(name, u));
         }
         videoClassify.setClassifies(classifies);
         Elements elements = doc.select("#contrainer > div:nth-child(3) > ul > li");
         videoClassify.setPage(Integer.parseInt(page.toString()));
         // 获取totalPage
-        String text = JsoupUtils.text(doc, "#contrainer > div.pages.small.mb-3");
+        String text = JsoupUtil.text(doc, "#contrainer > div.pages.small.mb-3");
         String regex = "/\\d+";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(text);
@@ -146,13 +164,13 @@ public final class VideoHelper {
         List<Video> videos = new ArrayList<>();
         for (int i = 0; i < elements.size(); i++) {
             Element element = elements.get(i);
-            String name = JsoupUtils.text(element, "li > a:nth-child(2) > h6");
-            String u = Constant.URL + JsoupUtils.attr(element, "href", "li > a:nth-child(1)");
-            String t = JsoupUtils.text(element, "li > div:nth-child(3)");
-            String info = JsoupUtils.text(element, "li > p");
-            String image = JsoupUtils.attr(element, "src", "li > a:nth-child(1) > img");
+            String name = JsoupUtil.text(element, "li > a:nth-child(2) > h6");
+            String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a:nth-child(1)");
+            String t = JsoupUtil.text(element, "li > div:nth-child(3)");
+            String info = JsoupUtil.text(element, "li > p");
+            String image = JsoupUtil.attr(element, "src", "li > a:nth-child(1) > img");
             if (image.equals("")) {
-                image = JsoupUtils.attr(element, "data-original", "li > a:nth-child(1) > img");
+                image = JsoupUtil.attr(element, "data-original", "li > a:nth-child(1) > img");
             }
             image = Constant.URL + image;
             Video video = new Video();

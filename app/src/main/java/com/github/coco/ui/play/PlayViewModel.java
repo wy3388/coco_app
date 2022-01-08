@@ -11,7 +11,10 @@ import com.github.coco.common.AppDatabase;
 import com.github.coco.dao.HistoryDao;
 import com.github.coco.entity.History;
 import com.github.lib.VideoHelper;
+import com.github.lib.bean.VideoInfo;
 import com.github.lib.bean.VideoPlay;
+
+import java.util.List;
 
 /**
  * Created on 2022/1/2.
@@ -43,6 +46,11 @@ public class PlayViewModel extends BaseViewModel {
         return history;
     }
 
+    private final MutableLiveData<List<VideoInfo.Episodes>> episodes = new MutableLiveData<>();
+    public LiveData<List<VideoInfo.Episodes>> getEpisodes() {
+        return episodes;
+    }
+
     public void playInfo(String url) {
         async(() -> VideoHelper.playInfo(url), this.videoPlay::postValue);
     }
@@ -64,5 +72,9 @@ public class PlayViewModel extends BaseViewModel {
 
     public void findOneByUrl(String url) {
         async(() -> historyDao.findOneByUrl(url), this.history::postValue);
+    }
+
+    public void episodesList(String url) {
+        async(() -> VideoHelper.episodesList(url), this.episodes::postValue);
     }
 }
