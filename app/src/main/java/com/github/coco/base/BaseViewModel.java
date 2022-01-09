@@ -96,7 +96,9 @@ public class BaseViewModel extends ScopeViewModel {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         e.printStackTrace();
-                        ToastUtil.show(e.getMessage());
+                        if (!(e instanceof CancellationException)) {
+                            ToastUtil.show(e.getMessage());
+                        }
                     }
 
                     @Override
@@ -123,8 +125,10 @@ public class BaseViewModel extends ScopeViewModel {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        ToastUtil.show(e.getMessage());
                         e.printStackTrace();
+                        if (!(e instanceof CancellationException)) {
+                            ToastUtil.show(e.getMessage());
+                        }
                     }
 
                     @Override

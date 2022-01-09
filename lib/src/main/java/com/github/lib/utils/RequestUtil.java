@@ -19,7 +19,7 @@ public final class RequestUtil {
         headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.43");
         return HttpRequest.get(url)
                 .headerMap(headers, true)
-                .timeout(6000)
+                .timeout(15000)
                 .execute()
                 .body();
     }

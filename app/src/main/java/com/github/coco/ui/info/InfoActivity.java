@@ -8,15 +8,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.github.coco.R;
 import com.github.coco.base.BaseVMActivity;
+import com.github.coco.common.AppDatabase;
 import com.github.coco.common.BundleBuilder;
-import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityInfoBinding;
+import com.github.coco.entity.Episodes;
 import com.github.coco.entity.History;
 import com.github.coco.ui.play.PlayActivity;
 import com.github.coco.utils.ActivityUtil;
-import com.github.lib.bean.VideoInfo;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -28,7 +27,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
 
     private int currentPosition = -1;
 
-    private final History history = new History();
+    private History history = null;
 
     private boolean isHistory = false;
 
@@ -50,6 +49,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
         binding.setViewModel(model);
         url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
+            binding.swipeRefreshLayout.setRefreshing(true);
             model.loadData(url);
             model.loadStarStatus(url);
             model.loadHistory(url);
@@ -58,33 +58,24 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
         binding.infoRv.setLayoutManager(new GridLayoutManager(this, 3));
         model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (currentPosition != position) {
-                history.setSourceIndex(0);
                 model.getAdapter().notifyItemChanged(position);
                 if (currentPosition > -1) {
                     model.getAdapter().notifyItemChanged(currentPosition);
                 }
                 currentPosition = position;
             }
-            VideoInfo.Episodes episodes = model.getAdapter().getData().get(position);
-            ArrayList<EpisodesParcelable> parcelableList = new ArrayList<>();
-            for (VideoInfo.Episodes e : model.getAdapter().getData()) {
-                EpisodesParcelable parcelable = new EpisodesParcelable();
-                parcelable.setName(e.getName());
-                parcelable.setUrl(e.getUrl());
-                parcelableList.add(parcelable);
-            }
+            Episodes episodes = model.getAdapter().getData().get(position);
             history.setEpisodesUrl(episodes.getUrl());
             history.setEpisodesName(episodes.getName());
             history.setEpisodesIndex(position);
             // 添加历史记录
-            model.insertHistory(url, history);
+            model.insertOrUpdateHistory(url, history);
             Bundle bundle = BundleBuilder.builder()
                     .putString("baseUrl", url)
                     .putString("url", episodes.getUrl())
-                    .putString("title", episodes.getName())
-                    .putParcelableArrayList("episodes", parcelableList)
-                    .putInt("episodesIndex", position)
-                    .putBoolean("isHistory", isHistory)
+                    .putLong("infoId", episodes.getInfoId())
+                    .putLong("episodesId", episodes.getId())
+                    .putInt("episodesPosition", position)
                     .build();
             ActivityUtil.start(this, PlayActivity.class, bundle);
         });
@@ -105,14 +96,13 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
 
     @Override
     protected void observer() {
-        model.getVideoInfo().observe(this, videoInfo -> {
-            history.setUrl(videoInfo.getUrl());
-            history.setName(videoInfo.getName());
-            history.setImage(videoInfo.getImage());
-            history.setType(videoInfo.getType());
+        model.getInfo().observe(this, info -> {
+            history = new History();
+            history.setUrl(info.getUrl());
+            history.setName(info.getName());
+            history.setImage(info.getImage());
+            history.setType(info.getType());
             history.setCreateTime(System.currentTimeMillis());
-            Collections.reverse(videoInfo.getEpisodes());
-            model.getAdapter().setNewInstance(videoInfo.getEpisodes());
         });
         model.getHistory().observe(this, history1 -> {
             if (history1 == null) {
@@ -123,6 +113,15 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
                 currentPosition = history1.getEpisodesIndex();
                 model.getAdapter().notifyItemChanged(currentPosition);
                 model.getAdapter().notifyItemChanged(tmp);
+            }
+        });
+        AppDatabase.getInstance().episodesDao().findAllByUrl(url).observe(this, episodes -> {
+            Collections.reverse(episodes);
+            model.getAdapter().setNewInstance(episodes);
+        });
+        model.getInfoStatus().observe(this, aBoolean -> {
+            if (aBoolean) {
+                binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
     }

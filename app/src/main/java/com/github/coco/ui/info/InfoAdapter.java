@@ -7,14 +7,14 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.github.coco.R;
 import com.github.coco.databinding.ItemInfoBinding;
-import com.github.lib.bean.VideoInfo;
+import com.github.coco.entity.Episodes;
 
 /**
  * Created on 2022/1/2.
  *
  * @author wy
  */
-public class InfoAdapter extends BaseQuickAdapter<VideoInfo.Episodes, BaseViewHolder> {
+public class InfoAdapter extends BaseQuickAdapter<Episodes, BaseViewHolder> {
 
     private OnSelectedListener listener;
 
@@ -28,7 +28,7 @@ public class InfoAdapter extends BaseQuickAdapter<VideoInfo.Episodes, BaseViewHo
     }
 
     @Override
-    protected void convert(@NonNull BaseViewHolder holder, VideoInfo.Episodes episodes) {
+    protected void convert(@NonNull BaseViewHolder holder, Episodes episodes) {
         ItemInfoBinding binding = DataBindingUtil.getBinding(holder.itemView);
         if (binding != null) {
             binding.setEpisodes(episodes);

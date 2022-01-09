@@ -29,6 +29,11 @@ public class BundleBuilder {
         return this;
     }
 
+    public BundleBuilder putLong(String key, Long value) {
+        bundle.putLong(key, value);
+        return this;
+    }
+
     public BundleBuilder putInt(String key, Integer value) {
         bundle.putInt(key, value);
         return this;

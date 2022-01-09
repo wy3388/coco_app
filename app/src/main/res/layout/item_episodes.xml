@@ -6,7 +6,7 @@
 
         <variable
             name="episodes"
-            type="com.github.coco.common.parcelable.EpisodesParcelable" />
+            type="com.github.coco.entity.Episodes" />
     </data>
 
     <androidx.cardview.widget.CardView

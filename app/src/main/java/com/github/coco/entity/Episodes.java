@@ -6,22 +6,17 @@ import androidx.room.PrimaryKey;
 import lombok.Data;
 
 /**
- * Created on 2022/1/2.
+ * Created on 2022/1/9.
  *
  * @author wy
  */
 @Data
 @Entity
-public class History {
+public class Episodes {
     @PrimaryKey(autoGenerate = true)
     private Long id;
-    private String url;
+    private Long infoId;
     private String name;
-    private String image;
-    private String type;
-    private String episodesUrl;
-    private String episodesName;
-    private Long episodesId;
-    private Integer episodesIndex;
+    private String url;
     private Long createTime;
 }

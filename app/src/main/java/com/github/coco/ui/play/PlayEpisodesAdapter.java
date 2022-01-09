@@ -6,15 +6,15 @@ import androidx.databinding.DataBindingUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.github.coco.R;
-import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ItemEpisodesBinding;
+import com.github.coco.entity.Episodes;
 
 /**
  * Created on 2022/1/8.
  *
  * @author wy
  */
-public class PlayEpisodesAdapter extends BaseQuickAdapter<EpisodesParcelable, BaseViewHolder> {
+public class PlayEpisodesAdapter extends BaseQuickAdapter<Episodes, BaseViewHolder> {
 
     private OnSelectedListener listener;
 
@@ -28,10 +28,10 @@ public class PlayEpisodesAdapter extends BaseQuickAdapter<EpisodesParcelable, Ba
     }
 
     @Override
-    protected void convert(@NonNull BaseViewHolder holder, EpisodesParcelable episodesParcelable) {
+    protected void convert(@NonNull BaseViewHolder holder, Episodes episodes) {
         ItemEpisodesBinding binding = DataBindingUtil.getBinding(holder.itemView);
         if (binding != null) {
-            binding.setEpisodes(episodesParcelable);
+            binding.setEpisodes(episodes);
         }
         if (listener != null) {
             listener.onSelected(holder, holder.getLayoutPosition());

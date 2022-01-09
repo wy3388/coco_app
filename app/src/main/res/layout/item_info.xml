@@ -6,7 +6,7 @@
 
         <variable
             name="episodes"
-            type="com.github.lib.bean.VideoInfo.Episodes" />
+            type="com.github.coco.entity.Episodes" />
     </data>
 
     <androidx.cardview.widget.CardView

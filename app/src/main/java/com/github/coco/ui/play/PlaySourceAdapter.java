@@ -7,15 +7,15 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.github.coco.R;
 import com.github.coco.databinding.ItemSourceBinding;
+import com.github.coco.entity.Play;
 import com.github.coco.ui.info.InfoAdapter;
-import com.github.lib.bean.VideoPlay;
 
 /**
  * Created on 2022/1/2.
  *
  * @author wy
  */
-public class PlaySourceAdapter extends BaseQuickAdapter<VideoPlay.Play, BaseViewHolder> {
+public class PlaySourceAdapter extends BaseQuickAdapter<Play, BaseViewHolder> {
 
     private InfoAdapter.OnSelectedListener listener;
 
@@ -29,7 +29,7 @@ public class PlaySourceAdapter extends BaseQuickAdapter<VideoPlay.Play, BaseView
     }
 
     @Override
-    protected void convert(@NonNull BaseViewHolder holder, VideoPlay.Play play) {
+    protected void convert(@NonNull BaseViewHolder holder, Play play) {
         ItemSourceBinding binding = DataBindingUtil.getBinding(holder.itemView);
         if (binding != null) {
             binding.setPlay(play);

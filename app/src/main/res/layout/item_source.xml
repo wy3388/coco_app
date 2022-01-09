@@ -6,7 +6,7 @@
 
         <variable
             name="play"
-            type="com.github.lib.bean.VideoPlay.Play" />
+            type="com.github.coco.entity.Play" />
     </data>
 
     <androidx.cardview.widget.CardView

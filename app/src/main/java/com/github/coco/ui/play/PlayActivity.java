@@ -13,14 +13,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
-import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityPlayBinding;
-import com.github.lib.bean.VideoInfo;
-import com.github.lib.bean.VideoPlay;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.github.coco.entity.Episodes;
+import com.github.coco.entity.Play;
+import com.github.coco.entity.PlayHistory;
 
 import cn.jzvd.Jzvd;
 
@@ -32,12 +28,11 @@ import cn.jzvd.Jzvd;
 public class PlayActivity extends AppCompatActivity {
 
     private int currentPosition = 0;
-    private String title = "";
-    private String baseUrl = "";
-    private boolean isHistory = false;
     private int episodesPosition = -1;
     private PlaySourceAdapter sourceAdapter;
     private PlayEpisodesAdapter episodesAdapter;
+    private String url = "";
+    private boolean flag = true;
 
     private PlayViewModel model;
     private ActivityPlayBinding binding;
@@ -54,30 +49,16 @@ public class PlayActivity extends AppCompatActivity {
     protected void init() {
         sourceAdapter = new PlaySourceAdapter();
         episodesAdapter = new PlayEpisodesAdapter();
+        url = getIntent().getExtras().getString("url");
         String baseUrl = getIntent().getExtras().getString("baseUrl");
-        if (baseUrl != null && !"".equals(baseUrl)) {
-            this.baseUrl = baseUrl;
-            model.findOneByUrl(baseUrl);
-        }
-        String url = getIntent().getExtras().getString("url");
-        if (url != null && !"".equals(url)) {
-            model.playInfo(url);
-        }
-        isHistory = getIntent().getExtras().getBoolean("isHistory", false);
-        if (isHistory) {
-            model.episodesList(url);
-        }
-        String title = getIntent().getExtras().getString("title");
-        if (title != null) {
-            this.title = title;
+        long episodesId = getIntent().getExtras().getLong("episodesId", -1);
+        long infoId = getIntent().getExtras().getLong("infoId", -1);
+        episodesPosition = getIntent().getExtras().getInt("episodesPosition", -1);
+        if (url != null && !"".equals(url) && episodesId != -1) {
+            model.playInfo(url, episodesId, infoId);
         }
         binding.episodesRv.setLayoutManager(new GridLayoutManager(this, 3));
         binding.episodesRv.setAdapter(episodesAdapter);
-        ArrayList<EpisodesParcelable> parcelables = getIntent().getExtras().getParcelableArrayList("episodes");
-        if (parcelables != null) {
-            episodesAdapter.setNewInstance(parcelables);
-        }
-        episodesPosition = getIntent().getExtras().getInt("episodesIndex", -1);
         binding.sourceRv.setAdapter(sourceAdapter);
         binding.sourceRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         sourceAdapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
@@ -87,13 +68,20 @@ public class PlayActivity extends AppCompatActivity {
             sourceAdapter.notifyItemChanged(position);
             sourceAdapter.notifyItemChanged(currentPosition);
             currentPosition = position;
-            // 更新数据库
-            VideoPlay.Play play = sourceAdapter.getData().get(position);
-            model.updatePlayUrl(baseUrl, play.getPlayUrl(), currentPosition, episodesPosition);
+            Play play = sourceAdapter.getData().get(position);
+            Episodes episodes = episodesAdapter.getData().get(episodesPosition);
+            // 更新播放历史
+            PlayHistory playHistory = new PlayHistory();
+            playHistory.setTitle(episodes.getName());
+            playHistory.setSourceIndex(position);
+            playHistory.setPlayUrl(play.getPlayUrl());
+            model.insertOrUpdatePlayHistory(url, playHistory);
             Jzvd.releaseAllVideos();
-            binding.player.setUp(play.getPlayUrl(), title);
+            binding.player.setUp(play.getPlayUrl(), episodes.getName());
+            binding.player.startVideoAfterPreloading();
         });
         episodesAdapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
+            flag = false;
             if (episodesPosition == -1 || episodesPosition == position) {
                 return;
             }
@@ -101,11 +89,13 @@ public class PlayActivity extends AppCompatActivity {
             episodesAdapter.notifyItemChanged(episodesPosition);
             episodesPosition = position;
             // 重新获取播放源
-            EpisodesParcelable parcelable = episodesAdapter.getData().get(position);
-            isHistory = false;
+            Episodes episodes = episodesAdapter.getData().get(position);
             sourceAdapter.setNewInstance(null);
             currentPosition = 0;
-            model.playInfo(parcelable.getUrl());
+            model.playInfo(episodes.getUrl(), episodes.getId(), episodes.getInfoId());
+            // 更新历史记录
+            model.updateHistory(baseUrl, episodes.getUrl(), episodes.getName(), episodes.getId(), position);
+            Jzvd.releaseAllVideos();
         });
         binding.player.setNormalClickListener(view -> finish());
         sourceAdapter.setOnSelectedListener((holder, position) -> {
@@ -134,40 +124,16 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     protected void observer() {
-        model.getVideoPlay().observe(this, videoPlay -> {
-            sourceAdapter.setNewInstance(videoPlay.getPlays());
-            if (videoPlay.getPlays().size() > 0) {
-                if (!isHistory && !"".equals(baseUrl)) {
-                    model.updatePlayUrl(baseUrl, videoPlay.getPlays().get(0).getPlayUrl(), currentPosition, episodesPosition);
-                    binding.player.setUp(videoPlay.getPlays().get(0).getPlayUrl(), title);
-                    binding.player.startVideoAfterPreloading();
-                }
+        model.getPlayInfo().observe(this, playInfo -> {
+            if (flag) {
+                episodesAdapter.setNewInstance(playInfo.getEpisodes());
             }
-        });
-        model.getHistory().observe(this, history -> {
-            if (history != null) {
-                int tmp = currentPosition;
-                int tmp1 = episodesPosition;
-                currentPosition = history.getSourceIndex();
-                episodesPosition = history.getEpisodesIndex();
-                sourceAdapter.notifyItemChanged(currentPosition);
-                sourceAdapter.notifyItemChanged(tmp);
-                sourceAdapter.notifyItemChanged(episodesPosition);
-                sourceAdapter.notifyItemChanged(tmp1);
-                binding.player.setUp(history.getPlayUrl(), history.getEpisodesName());
-                binding.player.startVideoAfterPreloading();
-            }
-        });
-        model.getEpisodes().observe(this, episodes -> {
-            List<EpisodesParcelable> list = new ArrayList<>();
-            for (VideoInfo.Episodes episode : episodes) {
-                EpisodesParcelable parcelable = new EpisodesParcelable();
-                parcelable.setName(episode.getName());
-                parcelable.setUrl(episode.getUrl());
-                list.add(parcelable);
-            }
-            Collections.reverse(list);
-            episodesAdapter.setNewInstance(list);
+            sourceAdapter.setNewInstance(playInfo.getPlays());
+            sourceAdapter.notifyItemChanged(currentPosition);
+            sourceAdapter.notifyItemChanged(playInfo.getSourceIndex());
+            currentPosition = playInfo.getSourceIndex();
+            binding.player.setUp(playInfo.getPlayUrl(), playInfo.getTitle());
+            binding.player.startVideoAfterPreloading();
         });
     }
 
