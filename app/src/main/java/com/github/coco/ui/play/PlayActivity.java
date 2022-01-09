@@ -1,6 +1,7 @@
 package com.github.coco.ui.play;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -14,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.github.coco.R;
 import com.github.coco.common.parcelable.EpisodesParcelable;
 import com.github.coco.databinding.ActivityPlayBinding;
-import com.github.coco.utils.ToastUtil;
 import com.github.lib.bean.VideoInfo;
 import com.github.lib.bean.VideoPlay;
 
@@ -55,16 +55,16 @@ public class PlayActivity extends AppCompatActivity {
         sourceAdapter = new PlaySourceAdapter();
         episodesAdapter = new PlayEpisodesAdapter();
         String baseUrl = getIntent().getExtras().getString("baseUrl");
-        if (baseUrl != null) {
+        if (baseUrl != null && !"".equals(baseUrl)) {
             this.baseUrl = baseUrl;
+            model.findOneByUrl(baseUrl);
         }
         String url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
             model.playInfo(url);
         }
         isHistory = getIntent().getExtras().getBoolean("isHistory", false);
-        if (isHistory && !"".equals(baseUrl)) {
-            model.findOneByUrl(baseUrl);
+        if (isHistory) {
             model.episodesList(url);
         }
         String title = getIntent().getExtras().getString("title");
@@ -87,9 +87,11 @@ public class PlayActivity extends AppCompatActivity {
             sourceAdapter.notifyItemChanged(position);
             sourceAdapter.notifyItemChanged(currentPosition);
             currentPosition = position;
-            VideoPlay.Source source = sourceAdapter.getData().get(position);
-            model.playUrl(source.getUrl());
+            // 更新数据库
+            VideoPlay.Play play = sourceAdapter.getData().get(position);
+            model.updatePlayUrl(baseUrl, play.getPlayUrl(), currentPosition, episodesPosition);
             Jzvd.releaseAllVideos();
+            binding.player.setUp(play.getPlayUrl(), title);
         });
         episodesAdapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (episodesPosition == -1 || episodesPosition == position) {
@@ -98,6 +100,12 @@ public class PlayActivity extends AppCompatActivity {
             episodesAdapter.notifyItemChanged(position);
             episodesAdapter.notifyItemChanged(episodesPosition);
             episodesPosition = position;
+            // 重新获取播放源
+            EpisodesParcelable parcelable = episodesAdapter.getData().get(position);
+            isHistory = false;
+            sourceAdapter.setNewInstance(null);
+            currentPosition = 0;
+            model.playInfo(parcelable.getUrl());
         });
         binding.player.setNormalClickListener(view -> finish());
         sourceAdapter.setOnSelectedListener((holder, position) -> {
@@ -127,39 +135,25 @@ public class PlayActivity extends AppCompatActivity {
 
     protected void observer() {
         model.getVideoPlay().observe(this, videoPlay -> {
-            sourceAdapter.setNewInstance(videoPlay.getSources());
-            if ("".equals(videoPlay.getUrl())) {
-                ToastUtil.show(this, "获取播放地址失败");
-                return;
-            }
-            if (!isHistory) {
-                if (!"".equals(baseUrl)) {
-                    model.updatePlayUrl(baseUrl, videoPlay.getUrl(), currentPosition);
+            sourceAdapter.setNewInstance(videoPlay.getPlays());
+            if (videoPlay.getPlays().size() > 0) {
+                if (!isHistory && !"".equals(baseUrl)) {
+                    model.updatePlayUrl(baseUrl, videoPlay.getPlays().get(0).getPlayUrl(), currentPosition, episodesPosition);
+                    binding.player.setUp(videoPlay.getPlays().get(0).getPlayUrl(), title);
+                    binding.player.startVideoAfterPreloading();
                 }
-                binding.player.setUp(videoPlay.getUrl(), title);
-                binding.player.startVideoAfterPreloading();
             }
-        });
-        model.getUrl().observe(this, s -> {
-            if ("".equals(s)) {
-                ToastUtil.show(this, "获取播放地址失败");
-                return;
-            }
-            if (Jzvd.CONTAINER_LIST.size() > 0) {
-                Jzvd.releaseAllVideos();
-            }
-            if (!"".equals(baseUrl)) {
-                model.updatePlayUrl(baseUrl, s, currentPosition);
-            }
-            binding.player.setUp(s, title);
-            binding.player.startVideoAfterPreloading();
         });
         model.getHistory().observe(this, history -> {
             if (history != null) {
                 int tmp = currentPosition;
+                int tmp1 = episodesPosition;
                 currentPosition = history.getSourceIndex();
+                episodesPosition = history.getEpisodesIndex();
                 sourceAdapter.notifyItemChanged(currentPosition);
                 sourceAdapter.notifyItemChanged(tmp);
+                sourceAdapter.notifyItemChanged(episodesPosition);
+                sourceAdapter.notifyItemChanged(tmp1);
                 binding.player.setUp(history.getPlayUrl(), history.getEpisodesName());
                 binding.player.startVideoAfterPreloading();
             }

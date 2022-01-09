@@ -1,7 +1,6 @@
 package com.github.coco.ui.info;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -55,6 +54,12 @@ public class InfoViewModel extends BaseViewModel {
 
     private boolean isClick = false;
 
+    private final MutableLiveData<History> history = new MutableLiveData<>();
+
+    public LiveData<History> getHistory() {
+        return history;
+    }
+
     public void insertHistory(String url, History history) {
         async(() -> {
             History history1 = historyDao.findOneByUrl(url);
@@ -63,9 +68,17 @@ public class InfoViewModel extends BaseViewModel {
             } else {
                 history1.setEpisodesName(history.getEpisodesName());
                 history1.setEpisodesUrl(history.getEpisodesUrl());
+                history1.setEpisodesIndex(history.getEpisodesIndex());
+                if (history.getSourceIndex() != null) {
+                    history1.setSourceIndex(history.getSourceIndex());
+                }
                 async(() -> historyDao.update(history1));
             }
         });
+    }
+
+    public void loadHistory(String url) {
+        async(() -> historyDao.findOneByUrl(url), this.history::postValue);
     }
 
     public void loadStarStatus(String url) {

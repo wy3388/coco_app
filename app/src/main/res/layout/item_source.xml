@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="source"
-            type="com.github.lib.bean.VideoPlay.Source" />
+            name="play"
+            type="com.github.lib.bean.VideoPlay.Play" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -28,7 +28,7 @@
             android:lines="1"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
-            android:text="@{source.name}" />
+            android:text="@{play.name}" />
 
     </androidx.cardview.widget.CardView>
 </layout>

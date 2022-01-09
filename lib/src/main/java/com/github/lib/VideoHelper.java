@@ -15,8 +15,14 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created on 2021/12/12.
@@ -99,22 +105,52 @@ public final class VideoHelper {
         return list;
     }
 
-    public static VideoPlay playInfo(String url) {
-        Document document = RequestUtil.document(url);
-        Elements elements = document.select("body > div.container > div:nth-child(2) > ul > li");
-        List<VideoPlay.Source> sources = new ArrayList<>();
-        for (Element element : elements) {
-            String name = JsoupUtil.text(element, "li > a");
-            String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
-            sources.add(new VideoPlay.Source(name, u));
-        }
-        String playUrl = "";
-        if (sources.size() > 0) {
-            // 获取播放地址
-            Document doc = RequestUtil.document(sources.get(0).getUrl());
-            playUrl = JsoupUtil.attr(doc, "src", "#x-video > source");
-        }
-        return new VideoPlay(playUrl, sources);
+    /**
+     * 获取播放源列表
+     *
+     * @param url url
+     */
+    @SuppressWarnings("unchecked")
+    public static void playList(String url, Consumer<List<VideoPlay.Play>> consumer, Function<Throwable, Void> function, ThreadPoolExecutor executor) {
+        CompletableFuture.supplyAsync(() -> RequestUtil.document(url), executor).thenApply(document -> {
+            Elements elements = document.select("body > div.container > div:nth-child(2) > ul > li");
+            List<CompletableFuture<VideoPlay.Play>> futures = new ArrayList<>();
+            for (Element element : elements) {
+                String name = JsoupUtil.text(element, "li > a");
+                String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
+                VideoPlay.Play play = new VideoPlay.Play();
+                play.setName(name);
+                play.setUrl(u);
+                CompletableFuture<VideoPlay.Play> future = CompletableFuture.supplyAsync(() -> {
+                    // 获取播放地址
+                    Document doc = RequestUtil.document(play.getUrl());
+                    String playUrl = JsoupUtil.attr(doc, "src", "#x-video > source");
+                    play.setPlayUrl(playUrl);
+                    return play;
+                }, executor);
+                futures.add(future);
+            }
+            return futures;
+        }).thenApply((Function<List<CompletableFuture<VideoPlay.Play>>, Void>) completableFutures -> {
+            CompletableFuture<VideoPlay.Play>[] array = new CompletableFuture[completableFutures.size()];
+            for (int i = 0; i < completableFutures.size(); i++) {
+                array[i] = completableFutures.get(i);
+            }
+            CompletableFuture.allOf(array).thenApply(unused -> completableFutures.stream().map(playCompletableFuture -> {
+                try {
+                    return playCompletableFuture.get(3, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }).filter(play -> {
+                if (play == null) {
+                    return false;
+                }
+                return play.getPlayUrl() != null && !"".equals(play.getPlayUrl());
+            }).collect(Collectors.toList())).thenAccept(consumer).exceptionally(function);
+            return null;
+        });
     }
 
     /**

@@ -15,7 +15,7 @@ import com.github.lib.bean.VideoPlay;
  *
  * @author wy
  */
-public class PlaySourceAdapter extends BaseQuickAdapter<VideoPlay.Source, BaseViewHolder> {
+public class PlaySourceAdapter extends BaseQuickAdapter<VideoPlay.Play, BaseViewHolder> {
 
     private InfoAdapter.OnSelectedListener listener;
 
@@ -29,10 +29,10 @@ public class PlaySourceAdapter extends BaseQuickAdapter<VideoPlay.Source, BaseVi
     }
 
     @Override
-    protected void convert(@NonNull BaseViewHolder holder, VideoPlay.Source source) {
+    protected void convert(@NonNull BaseViewHolder holder, VideoPlay.Play play) {
         ItemSourceBinding binding = DataBindingUtil.getBinding(holder.itemView);
         if (binding != null) {
-            binding.setSource(source);
+            binding.setPlay(play);
         }
         if (listener != null) {
             listener.onSelected(holder, holder.getLayoutPosition());

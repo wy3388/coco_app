@@ -30,6 +30,10 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
 
     private final History history = new History();
 
+    private boolean isHistory = false;
+
+    private String url = "";
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_info;
@@ -44,15 +48,17 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
     protected void init() {
         binding.setLifecycleOwner(this);
         binding.setViewModel(model);
-        String url = getIntent().getExtras().getString("url");
+        url = getIntent().getExtras().getString("url");
         if (url != null && !"".equals(url)) {
             model.loadData(url);
             model.loadStarStatus(url);
+            model.loadHistory(url);
         }
         binding.infoRv.setAdapter(model.getAdapter());
         binding.infoRv.setLayoutManager(new GridLayoutManager(this, 3));
         model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (currentPosition != position) {
+                history.setSourceIndex(0);
                 model.getAdapter().notifyItemChanged(position);
                 if (currentPosition > -1) {
                     model.getAdapter().notifyItemChanged(currentPosition);
@@ -69,6 +75,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
             }
             history.setEpisodesUrl(episodes.getUrl());
             history.setEpisodesName(episodes.getName());
+            history.setEpisodesIndex(position);
             // 添加历史记录
             model.insertHistory(url, history);
             Bundle bundle = BundleBuilder.builder()
@@ -77,6 +84,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
                     .putString("title", episodes.getName())
                     .putParcelableArrayList("episodes", parcelableList)
                     .putInt("episodesIndex", position)
+                    .putBoolean("isHistory", isHistory)
                     .build();
             ActivityUtil.start(this, PlayActivity.class, bundle);
         });
@@ -106,5 +114,22 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
             Collections.reverse(videoInfo.getEpisodes());
             model.getAdapter().setNewInstance(videoInfo.getEpisodes());
         });
+        model.getHistory().observe(this, history1 -> {
+            if (history1 == null) {
+                isHistory = false;
+            } else {
+                isHistory = true;
+                int tmp = currentPosition;
+                currentPosition = history1.getEpisodesIndex();
+                model.getAdapter().notifyItemChanged(currentPosition);
+                model.getAdapter().notifyItemChanged(tmp);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        model.loadHistory(url);
     }
 }

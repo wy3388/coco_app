@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoPlay {
-    private String url;
 
-    private List<Source> sources;
+    private List<Play> plays;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Source {
+    public static class Play {
         private String name;
         private String url;
+        private String playUrl;
     }
 }

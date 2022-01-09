@@ -20,6 +20,7 @@ public class History {
     private String image;
     private String type;
     private Integer sourceIndex;
+    private Integer episodesIndex;
     private String playUrl;
     private Long createTime;
     private String episodesUrl;
