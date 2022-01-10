@@ -30,7 +30,6 @@ public class PlayActivity extends AppCompatActivity {
     private int episodesPosition = -1;
     private PlaySourceAdapter sourceAdapter;
     private PlayEpisodesAdapter episodesAdapter;
-    private String url = "";
     private boolean flag = true;
 
     private PlayViewModel model;
@@ -48,7 +47,7 @@ public class PlayActivity extends AppCompatActivity {
     protected void init() {
         sourceAdapter = new PlaySourceAdapter();
         episodesAdapter = new PlayEpisodesAdapter();
-        url = getIntent().getExtras().getString("url");
+        String url = getIntent().getExtras().getString("url");
         String baseUrl = getIntent().getExtras().getString("baseUrl");
         long episodesId = getIntent().getExtras().getLong("episodesId", -1);
         long infoId = getIntent().getExtras().getLong("infoId", -1);
