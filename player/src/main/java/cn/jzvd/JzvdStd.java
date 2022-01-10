@@ -374,7 +374,7 @@ public class JzvdStd extends Jzvd {
             clarity.setText(jzDataSource.getCurrentKey().toString());
             for (int j = 0; j < layout.getChildCount(); j++) {//设置点击之后的颜色
                 if (j == jzDataSource.currentUrlIndex) {
-                    ((TextView) layout.getChildAt(j)).setTextColor(Color.parseColor("#fff85959"));
+                    ((TextView) layout.getChildAt(j)).setTextColor(Color.parseColor("#2196F3"));
                 } else {
                     ((TextView) layout.getChildAt(j)).setTextColor(Color.parseColor("#ffffff"));
                 }
@@ -392,7 +392,7 @@ public class JzvdStd extends Jzvd {
             layout.addView(clarityItem, j);
             clarityItem.setOnClickListener(mQualityListener);
             if (j == jzDataSource.currentUrlIndex) {
-                clarityItem.setTextColor(Color.parseColor("#fff85959"));
+                clarityItem.setTextColor(Color.parseColor("#2196F3"));
             }
         }
 
