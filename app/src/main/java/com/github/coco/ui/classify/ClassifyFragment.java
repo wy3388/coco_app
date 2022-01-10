@@ -32,7 +32,6 @@ public class ClassifyFragment extends BaseFragment<FragmentClassifyBinding> {
         adapter = new ClassifyAdapter();
         binding.classifyRv.setAdapter(adapter);
         binding.classifyRv.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        adapter.setEmptyView(R.layout.view_empty);
         adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             Classify classify = adapter.getData().get(position);
             Bundle bundle = BundleBuilder.builder()
