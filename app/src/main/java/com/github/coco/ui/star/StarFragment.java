@@ -1,13 +1,9 @@
 package com.github.coco.ui.star;
 
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.github.coco.R;
 import com.github.coco.base.BaseFragment;
 import com.github.coco.common.AppDatabase;
@@ -36,6 +32,7 @@ public class StarFragment extends BaseFragment<FragmentStarBinding> {
         adapter = new StarAdapter();
         binding.starRv.setAdapter(adapter);
         binding.starRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.setEmptyView(R.layout.view_empty);
         adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             Star star = adapter.getData().get(position);
             Bundle bundle = BundleBuilder.builder()

@@ -44,6 +44,7 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
         adapter = new HistoryAdapter();
         binding.historyRv.setAdapter(adapter);
         binding.historyRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.setEmptyView(R.layout.view_empty);
         binding.editBtn.setOnClickListener(view -> {
             if (!selectType) {
                 selectList.clear();

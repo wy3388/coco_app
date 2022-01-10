@@ -34,6 +34,7 @@ public class HomeFragment extends BaseVMFragment<FragmentHomeBinding, HomeViewMo
         binding.setViewModel(model);
         binding.homeRv.setAdapter(model.getAdapter());
         binding.homeRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        model.getAdapter().setEmptyView(R.layout.view_empty);
         model.loadData();
         model.getAdapter().setOnItemClickListener((baseQuickAdapter, view, position) -> {
             Video video = model.getAdapter().getData().get(position);
