@@ -99,10 +99,11 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
             } else {
                 History history = adapter.getData().get(position);
                 Bundle bundle = BundleBuilder.builder()
-                        .putString("title", history.getEpisodesName())
-                        .putString("url", history.getEpisodesUrl())
-                        .putBoolean("isHistory", true)
                         .putString("baseUrl", history.getUrl())
+                        .putString("url", history.getEpisodesUrl())
+                        .putLong("infoId", history.getInfoId())
+                        .putLong("episodesId", history.getEpisodesId())
+                        .putInt("episodesPosition", history.getEpisodesIndex())
                         .build();
                 ActivityUtil.start(this, PlayActivity.class, bundle);
             }

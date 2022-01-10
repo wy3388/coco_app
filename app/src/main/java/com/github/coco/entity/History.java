@@ -22,6 +22,7 @@ public class History {
     private String episodesUrl;
     private String episodesName;
     private Long episodesId;
+    private Long infoId;
     private Integer episodesIndex;
     private Long createTime;
 }

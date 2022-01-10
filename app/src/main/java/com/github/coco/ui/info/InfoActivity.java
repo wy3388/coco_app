@@ -29,8 +29,6 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
 
     private History history = null;
 
-    private boolean isHistory = false;
-
     private String url = "";
 
     @Override
@@ -68,6 +66,8 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
             history.setEpisodesUrl(episodes.getUrl());
             history.setEpisodesName(episodes.getName());
             history.setEpisodesIndex(position);
+            history.setInfoId(episodes.getInfoId());
+            history.setEpisodesId(episodes.getId());
             // 添加历史记录
             model.insertOrUpdateHistory(url, history);
             Bundle bundle = BundleBuilder.builder()
@@ -105,10 +105,7 @@ public class InfoActivity extends BaseVMActivity<ActivityInfoBinding, InfoViewMo
             history.setCreateTime(System.currentTimeMillis());
         });
         model.getHistory().observe(this, history1 -> {
-            if (history1 == null) {
-                isHistory = false;
-            } else {
-                isHistory = true;
+            if (history1 != null) {
                 int tmp = currentPosition;
                 currentPosition = history1.getEpisodesIndex();
                 model.getAdapter().notifyItemChanged(currentPosition);
