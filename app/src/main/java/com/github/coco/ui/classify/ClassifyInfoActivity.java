@@ -35,7 +35,6 @@ public class ClassifyInfoActivity extends BaseVMActivity<ActivityClassifyInfoBin
         binding.setViewModel(model);
         binding.classifyInfoRv.setAdapter(model.getAdapter());
         binding.classifyInfoRv.setLayoutManager(new LinearLayoutManager(this));
-        model.getAdapter().setEmptyView(R.layout.view_empty);
         String type = getIntent().getExtras().getString("type");
         if (type != null && !"".equals(type)) {
             model.loadData(type);

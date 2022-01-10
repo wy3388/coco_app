@@ -1,17 +1,13 @@
 package com.github.coco.ui.play;
 
-import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.coco.R;
+import com.github.coco.base.BaseVMActivity;
 import com.github.coco.databinding.ActivityPlayBinding;
 import com.github.coco.entity.Episodes;
 import com.github.coco.entity.Play;
@@ -24,7 +20,7 @@ import cn.jzvd.Jzvd;
  *
  * @author wy
  */
-public class PlayActivity extends AppCompatActivity {
+public class PlayActivity extends BaseVMActivity<ActivityPlayBinding, PlayViewModel> {
 
     private int currentPosition = 0;
     private int episodesPosition = -1;
@@ -32,18 +28,17 @@ public class PlayActivity extends AppCompatActivity {
     private PlayEpisodesAdapter episodesAdapter;
     private boolean flag = true;
 
-    private PlayViewModel model;
-    private ActivityPlayBinding binding;
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_play);
-        model = new ViewModelProvider(this).get(PlayViewModel.class);
-        init();
-        observer();
+    protected int getLayoutId() {
+        return R.layout.activity_play;
     }
 
+    @Override
+    protected Class<PlayViewModel> mClass() {
+        return PlayViewModel.class;
+    }
+
+    @Override
     protected void init() {
         sourceAdapter = new PlaySourceAdapter();
         episodesAdapter = new PlayEpisodesAdapter();
@@ -121,6 +116,7 @@ public class PlayActivity extends AppCompatActivity {
 
     }
 
+    @Override
     protected void observer() {
         model.getPlayInfo().observe(this, playInfo -> {
             if (flag) {

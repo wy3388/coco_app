@@ -49,4 +49,5 @@ public class HomeFragment extends BaseVMFragment<FragmentHomeBinding, HomeViewMo
     protected void observer() {
         model.getVideos().observe(this, videos -> model.getAdapter().addData(videos));
     }
+
 }

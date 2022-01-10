@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -153,15 +154,36 @@ public final class VideoHelper {
         });
     }
 
-    /**
-     * 获取播放地址
-     *
-     * @param url url
-     * @return {@code String}
-     */
-    public static String playUrl(String url) {
-        Document document = RequestUtil.document(url);
-        return JsoupUtil.attr(document, "src", "#x-video > source");
+    @SuppressWarnings("unchecked")
+    public static List<Classify> getCoverImage(List<Classify> classifies, Consumer<List<Classify>> consumer, ThreadPoolExecutor executor) {
+        List<CompletableFuture<Classify>> futures = new ArrayList<>();
+        for (Classify classify : classifies) {
+            CompletableFuture<Classify> future = CompletableFuture.supplyAsync(() -> {
+                // 获取封面图片
+                Document document = RequestUtil.document(classify.getUrl());
+                String imageUrl = Constant.URL +
+                        JsoupUtil.attr(document, "src", "#contrainer > div:nth-child(3) > ul > li:nth-child(1) > a > img");
+                classify.setImageUrl(imageUrl);
+                return classify;
+            }, executor);
+            futures.add(future);
+        }
+        CompletableFuture<Classify>[] arr = new CompletableFuture[futures.size()];
+        for (int i = 0; i < futures.size(); i++) {
+            arr[i] = futures.get(i);
+        }
+        CompletableFuture.allOf(futures.toArray(arr)).thenApply(unused -> futures.stream().map(classifyCompletableFuture -> {
+            try {
+                return classifyCompletableFuture.get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList())).thenAccept(consumer).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
+        });
+        return null;
     }
 
     /**
@@ -181,7 +203,7 @@ public final class VideoHelper {
         for (Element element : elements1) {
             String name = JsoupUtil.text(element, "li > a");
             String u = Constant.URL + JsoupUtil.attr(element, "href", "li > a");
-            classifies.add(new Classify(name, u));
+            classifies.add(new Classify(name, u, null));
         }
         videoClassify.setClassifies(classifies);
         Elements elements = doc.select("#contrainer > div:nth-child(3) > ul > li");

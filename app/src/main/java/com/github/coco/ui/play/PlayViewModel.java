@@ -35,11 +35,9 @@ import lombok.Data;
  */
 public class PlayViewModel extends BaseViewModel {
 
-    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(10,
-            15,
-            300,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(100));
+    private final  int processors = Runtime.getRuntime().availableProcessors();
+
+    private ThreadPoolExecutor executor = null;
 
     public PlayViewModel(@NonNull Application application) {
         super(application);
@@ -82,6 +80,11 @@ public class PlayViewModel extends BaseViewModel {
             List<Play> playList = playDao.findAllByEpisodesId(episodesId);
             if (playList == null || playList.size() == 0) {
                 // 没有缓存
+                executor = new ThreadPoolExecutor(processors + 1,
+                        processors * 2 + 1,
+                        300,
+                        TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<>(processors * 5));
                 VideoHelper.playList(url, plays -> {
                     Play[] playArr = new Play[plays.size()];
                     for (int i = 0; i < plays.size(); i++) {
@@ -152,7 +155,9 @@ public class PlayViewModel extends BaseViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        executor.shutdown();
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 
     @Data

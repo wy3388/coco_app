@@ -15,4 +15,5 @@ import lombok.NoArgsConstructor;
 public class Classify {
     private String name;
     private String url;
+    private String imageUrl;
 }

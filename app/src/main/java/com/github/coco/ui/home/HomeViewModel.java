@@ -16,6 +16,9 @@ import com.github.lib.bean.Video;
 import com.github.lib.bean.VideoClassify;
 
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.functions.Consumer;
 
@@ -25,6 +28,11 @@ import io.reactivex.rxjava3.functions.Consumer;
  * @author wy
  */
 public class HomeViewModel extends BaseViewModel {
+
+    private final  int processors = Runtime.getRuntime().availableProcessors();
+
+    private ThreadPoolExecutor executor = null;
+
     private final MutableLiveData<List<Video>> videos = new MutableLiveData<>();
 
     public HomeViewModel(@NonNull Application application) {
@@ -54,18 +62,26 @@ public class HomeViewModel extends BaseViewModel {
             // 判断是否是第一次打开
             Integer isFirst = SharedPreferencesUtil.getInt("isFirst");
             if (isFirst == 0) {
-                List<com.github.lib.bean.Classify> classifyList = videoClassify.getClassifies();
-                Classify[] classifies = new Classify[videoClassify.getClassifies().size() - 1];
-                for (int i = 0; i < classifyList.size(); i++) {
-                    if (i > 0) {
-                        Classify classify = new Classify();
-                        classify.setName(classifyList.get(i).getName());
-                        classify.setUrl(classifyList.get(i).getUrl());
-                        classify.setCreateTime(System.currentTimeMillis());
-                        classifies[i - 1] = classify;
+                executor = new ThreadPoolExecutor(processors+ 1,
+                        processors * 2 + 1,
+                        300,
+                        TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<>(processors * 5));
+                // 获取封面图片
+                VideoHelper.getCoverImage(videoClassify.getClassifies(), classifies -> {
+                    Classify[] arr = new Classify[videoClassify.getClassifies().size() - 1];
+                    for (int i = 0; i < classifies.size(); i++) {
+                        if (i > 0) {
+                            Classify classify = new Classify();
+                            classify.setName(classifies.get(i).getName());
+                            classify.setUrl(classifies.get(i).getUrl());
+                            classify.setImageUrl(classifies.get(i).getImageUrl());
+                            classify.setCreateTime(System.currentTimeMillis());
+                            arr[i - 1] = classify;
+                        }
                     }
-                }
-                async(() -> classifyDao.insert(classifies), () -> SharedPreferencesUtil.putInt("isFirst", 1));
+                    async(() -> classifyDao.insert(arr), () -> SharedPreferencesUtil.putInt("isFirst", 1));
+                }, executor);
             }
         });
     }
@@ -79,5 +95,13 @@ public class HomeViewModel extends BaseViewModel {
         adapter.setNewInstance(null);
         page = 1;
         loadData();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 }
