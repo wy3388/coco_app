@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -58,6 +59,7 @@ public class IImageView extends LinearLayout {
         shimmerLayout.startShimmerAnimation();
         GlideApp.with(context)
                 .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.ic_image_placeholder)
                 .listener(new RequestListener<Drawable>() {
                     @Override
@@ -79,6 +81,7 @@ public class IImageView extends LinearLayout {
         shimmerLayout.startShimmerAnimation();
         GlideApp.with(view)
                 .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.ic_image_placeholder)
                 .listener(new RequestListener<Drawable>() {
                     @Override

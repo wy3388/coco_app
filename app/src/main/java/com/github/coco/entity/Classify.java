@@ -17,5 +17,6 @@ public class Classify {
     private Long id;
     private String name;
     private String url;
+    private String imageUrl;
     private Long createTime;
 }

@@ -86,6 +86,12 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
                 histories[i] = selectList.get(i);
             }
             model.deleteHistory(histories);
+            // 更新ui
+            selectType = false;
+            adapter.setSelect(false);
+            binding.editTv.setText("编辑");
+            binding.deleteBtn.setVisibility(View.GONE);
+            binding.deleteView.setVisibility(View.GONE);
         });
         adapter.setOnItemClickListener((baseQuickAdapter, view, position) -> {
             if (selectType) {
@@ -114,5 +120,16 @@ public class HistoryFragment extends BaseVMFragment<FragmentHistoryBinding, Hist
     @Override
     protected void observer() {
         AppDatabase.getInstance().historyDao().findAll().observe(this, histories -> adapter.setNewInstance(histories));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // 更新ui
+        selectType = false;
+        adapter.setSelect(false);
+        binding.editTv.setText("编辑");
+        binding.deleteBtn.setVisibility(View.GONE);
+        binding.deleteView.setVisibility(View.GONE);
     }
 }
