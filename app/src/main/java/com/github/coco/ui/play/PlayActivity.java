@@ -74,7 +74,7 @@ public class PlayActivity extends AppCompatActivity {
             playHistory.setTitle(episodes.getName());
             playHistory.setSourceIndex(position);
             playHistory.setPlayUrl(play.getPlayUrl());
-            model.insertOrUpdatePlayHistory(url, playHistory);
+            model.insertOrUpdatePlayHistory(episodes.getUrl(), playHistory);
             Jzvd.releaseAllVideos();
             binding.player.setUp(play.getPlayUrl(), episodes.getName());
             binding.player.startVideoAfterPreloading();
