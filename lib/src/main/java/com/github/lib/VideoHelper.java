@@ -155,7 +155,7 @@ public final class VideoHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<Classify> getCoverImage(List<Classify> classifies, Consumer<List<Classify>> consumer, ThreadPoolExecutor executor) {
+    public static void getCoverImage(List<Classify> classifies, Consumer<List<Classify>> consumer, ThreadPoolExecutor executor) {
         List<CompletableFuture<Classify>> futures = new ArrayList<>();
         for (Classify classify : classifies) {
             CompletableFuture<Classify> future = CompletableFuture.supplyAsync(() -> {
@@ -183,7 +183,6 @@ public final class VideoHelper {
             throwable.printStackTrace();
             return null;
         });
-        return null;
     }
 
     /**

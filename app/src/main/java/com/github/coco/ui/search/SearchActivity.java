@@ -39,6 +39,8 @@ public class SearchActivity extends BaseVMActivity<ActivitySearchBinding, Search
 
     @Override
     protected void init() {
+        // 输入框获取焦点
+        binding.searchEt.requestFocus();
         adapter = new SearchHistoryAdapter();
         FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
         flexboxLayoutManager.setFlexWrap(FlexWrap.WRAP);
